@@ -78,7 +78,7 @@
 							<control idMso="NumberingGallery" showLabel="false" />
 							<button id="BulletsTicks" label="Ticks" showLabel="false" imageMso="AcceptTask" onAction="TextBulletsTicks" />
 							<button id="BulletsCrosses" label="Crosses" showLabel="false" imageMso="DeclineInvitation" onAction="TextBulletsCrosses" />
-<!--/////////////////////////////////////////////////////////////////////////////////-->
+
 							<button id="IncreaseLineSpacing" label="Increase line spacing" showLabel="false" imageMso="ParagraphSpacingIncrease" onAction="ObjectsIncreaseLineSpacing" />
 							<button id="DecreaseLineSpacing" label="Decrease line spacing" showLabel="false" imageMso="ParagraphSpacingDecrease" onAction="ObjectsDecreaseLineSpacing" />
 							<button idMso="IndentIncrease" showLabel="false" />
@@ -88,7 +88,9 @@
 					</buttonGroup>
 					<separator id="separator6" />
 					<button id="RemoveTextButton" label="Remove text" imageMso="ReviewDeleteMarkup" showLabel="false" onAction="ObjectsRemoveText" />
+					
 					<button id="SwapTextButton" label="Swap text (no formatting)" imageMso="Copy" showLabel="false" onAction="ObjectsSwapTextNoFormatting" />
+					
 					<button id="SwapTextButton2" label="Swap text (with formatting)" imageMso="GroupCompare" showLabel="false" onAction="ObjectsSwapText" />
 					<button idMso="FontsReplaceFonts" showLabel="false" />
 					<button id="ChangeSpellCheckLanguage" label="Set proofing language on all objects and all slides" imageMso="SetLanguage" showLabel="false" onAction="ShowChangeSpellCheckLanguageForm" />
@@ -124,6 +126,8 @@
 					<control idMso="ObjectSizeAndPositionDialog" showLabel="false" />
 					<control idMso="FormatPainter" showLabel="false" />
 					<button id="ObjectsCopyRoundedCorner" label="Copy rounded corner of first selected shape to selected shapes" showLabel="false" imageMso="ShapeRoundedRectangle" onAction="ObjectsCopyRoundedCorner" />
+				
+					
 					<button id="ObjectsCopyShapeTypeAndAdjustments" label="Copy shape type and all adjustments of first selected shape to selected shapes" showLabel="false" imageMso="OutlineTasksShowAll" onAction="ObjectsCopyShapeTypeAndAdjustments" />
 					<toggleButton idMso="ObjectEditPoints" showLabel="false" />
 					<button id="RectifyLines" label="Rectify lines" showLabel="false" imageMso="ArrowsMore" onAction="RectifyLines" />
@@ -133,25 +137,34 @@
 						<button id="ConnectRectangleShapesBottomToTop" label="Shape 1 bottom side to shape 2 top side" onAction="ConnectRectangleShapesBottomToTop" />
 						<button id="ConnectRectangleShapesTopToBottom" label="Shape 1 top side to shape 2 bottom side" onAction="ConnectRectangleShapesTopToBottom" />
 					</menu>
+					
 					<separator id="CopyPositionSeperator" />
 					<menu id="SelectShapeByMenu" label="Select shape by attributes" imageMso="SelectionPane" showLabel="false">
 						<button id="SelectShapesByFillColor" label="Select shapes with same fill color" onAction="ObjectsSelectBySameFillColor" />
+						
 						<button id="SelectShapesByLineColor" label="Select shapes with same line color" onAction="ObjectsSelectBySameLineColor" />
+						
 						<button id="SelectShapesByFillAndLineColor" label="Select shapes with same fill and line color" onAction="ObjectsSelectBySameFillAndLineColor" />
+							
 						<button id="SelectShapesBySameWidthAndHeight" label="Select shapes with same size" onAction="ObjectsSelectBySameWidthAndHeight" />
 						<button id="SelectShapesBySameWidth" label="Select shapes with same width" onAction="ObjectsSelectBySameWidth" />
 						<button id="SelectShapesBySameHeight" label="Select shapes with same height" onAction="ObjectsSelectBySameHeight" />
+						
 						<button id="SelectShapesBySameType" label="Select shapes with same type" onAction="ObjectsSelectBySameType" />
 					</menu>
+					
 					<button id="CopyPosition" label="Copy position and dimensions" showLabel="false" imageMso="GroupSizeAndPosition" onAction="CopyPosition" />
 					<splitButton id="PastePositionSplitButton" size="normal" showLabel="false">
 						<button id="PastePosition" label="Paste position" showLabel="false" imageMso="PasteDuplicate" onAction="PastePosition" />
+						
 						<menu id="PastePositionMenu" itemSize="normal">
 							<button id="PastePositionAndDimensions" label="Paste position and dimensions" showLabel="false" imageMso="PasteDuplicate" onAction="PastePositionAndDimensions" />
 						</menu>
+					
 					</splitButton>
 					<separator id="CopyShapeToSeparator" />
 					<button id="CreateMultiSlideShape" label="Copy shape to multiple slides (multislide shape)" showLabel="false" imageMso="MasterDocumentCreateSubdocument" onAction="ShowFormCopyShapeToMultipleSlides" />
+					<!--/////////////////////////////////////////////////////////////////////////////////-->
 					<button id="UpdateMultiSlideShape" label="Update position and dimensions of selected multislide shape on all slides" showLabel="false" imageMso="MasterDocumentInsertSubdocument" onAction="UpdateTaggedShapePositionAndDimensions" />
 					<button id="DeleteMultislideShape" label="Delete selected multislide shape on all slides" showLabel="false" imageMso="MasterDocumentUnlinkSubdocument" onAction="DeleteTaggedShapes" />
 					<separator id="TextMargins" />

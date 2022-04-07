@@ -154,6 +154,18 @@
     can be found.
   -->
   <ItemGroup>
+    <Compile Include="Forms\ChangeSpellCheckLanguageForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ChangeSpellCheckLanguageForm.Designer.cs">
+      <DependentUpon>ChangeSpellCheckLanguageForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\CopyShapeToMultipleSlidesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CopyShapeToMultipleSlidesForm.Designer.cs">
+      <DependentUpon>CopyShapeToMultipleSlidesForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\ProgressForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -163,6 +175,12 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <EmbeddedResource Include="Forms\ChangeSpellCheckLanguageForm.resx">
+      <DependentUpon>ChangeSpellCheckLanguageForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CopyShapeToMultipleSlidesForm.resx">
+      <DependentUpon>CopyShapeToMultipleSlidesForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ProgressForm.resx">
       <DependentUpon>ProgressForm.cs</DependentUpon>
     </EmbeddedResource>

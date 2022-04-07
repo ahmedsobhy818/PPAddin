@@ -12,7 +12,12 @@ namespace PPAddin
    public partial class ThisAddIn
    {
         public static PowerPoint.Application application;
-      
+        //
+
+        public static double TopToCopy, LeftToCopy, WidthToCopy, HeightToCopy;
+        public static Boolean PositionCopied;
+
+
       protected override Microsoft.Office.Core.IRibbonExtensibility CreateRibbonExtensibilityObject()
       {
             
