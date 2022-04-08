@@ -1900,7 +1900,7 @@ End Sub
 
                 foreach (Microsoft.Office.Interop.PowerPoint.Shape SlideShapeToCheck in myDocument.View.Slide.Shapes)
                 {
-                    if (SlideShapeToCheck.Line.ForeColor.RGB == SlideShape.Line.ForeColor.RGB && SlideShapeToCheck.Fill .ForeColor.RGB == SlideShape.Fill .ForeColor.RGB && && SlideShapeToCheck.Type != MsoShapeType.msoPlaceholder && (SlideShapeToCheck.Line.Visible == MsoTriState.msoCTrue || SlideShapeToCheck.Line.Visible == MsoTriState.msoTrue) && (SlideShapeToCheck.Fill.Visible == MsoTriState.msoCTrue || SlideShapeToCheck.Fill .Visible == MsoTriState.msoTrue))
+                    if (SlideShapeToCheck.Line.ForeColor.RGB == SlideShape.Line.ForeColor.RGB && SlideShapeToCheck.Fill .ForeColor.RGB == SlideShape.Fill .ForeColor.RGB && SlideShapeToCheck.Type != MsoShapeType.msoPlaceholder && (SlideShapeToCheck.Line.Visible == MsoTriState.msoCTrue || SlideShapeToCheck.Line.Visible == MsoTriState.msoTrue) && (SlideShapeToCheck.Fill.Visible == MsoTriState.msoCTrue || SlideShapeToCheck.Fill .Visible == MsoTriState.msoTrue))
                     {
                         if (SlideShapeToCheck.Name != SlideShape.Name)
                         {
@@ -2488,6 +2488,341 @@ End Sub
         MsgBox "No shapes selected."
     End If
 End Sub
+         */
+        #endregion
+
+        #region UpdateTaggedShapePositionAndDimensions
+        public void UpdateTaggedShapePositionAndDimensions(IRibbonControl control)
+        {
+            var myDocument = ThisAddIn.application.ActiveWindow;
+            string CrossSlideShapeId;
+            if(myDocument.Selection.Type ==PpSelectionType.ppSelectionShapes)
+            {
+                if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA CROSS-SLIDE SHAPE"].ToString() != "")
+                {
+                    CrossSlideShapeId = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA CROSS-SLIDE SHAPE"];
+                    for (int SlideCount = 1; SlideCount <=ThisAddIn.application. ActivePresentation.Slides.Count; SlideCount++) {
+                        foreach (Shape Shape in ThisAddIn.application. ActivePresentation.Slides[SlideCount].Shapes) {
+
+
+                            if (Shape.Tags["INSTRUMENTA CROSS-SLIDE SHAPE"] == CrossSlideShapeId) {
+
+
+                                Shape.Top = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Top;
+                                    Shape.Left = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Left;
+                                    Shape.Width = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Width;
+                                    Shape.Height = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Height;
+
+                    }
+
+
+                }
+            }
+
+
+                }
+                else
+                {
+                    MessageBox.Show("This shape does Not have a tag.");
+                }
+            }
+            else
+            {
+                MessageBox.Show( "No shape selected.");
+            }
+        }
+
+        /*
+         Sub UpdateTaggedShapePositionAndDimensions()
+    Set myDocument = Application.ActiveWindow
+    Dim CrossSlideShapeId As String
+    
+    If myDocument.Selection.Type = ppSelectionShapes Then
+        
+        If Not Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA CROSS-SLIDE SHAPE") = "" Then
+            CrossSlideShapeId = Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA CROSS-SLIDE SHAPE")
+            
+            For SlideCount = 1 To ActivePresentation.Slides.Count
+                For Each Shape In ActivePresentation.Slides(SlideCount).Shapes
+                    
+                    If Shape.Tags("INSTRUMENTA CROSS-SLIDE SHAPE") = CrossSlideShapeId Then
+                        
+                        With Shape
+                            .Top = Application.ActiveWindow.Selection.ShapeRange.Top
+                            .Left = Application.ActiveWindow.Selection.ShapeRange.Left
+                            .Width = Application.ActiveWindow.Selection.ShapeRange.Width
+                            .Height = Application.ActiveWindow.Selection.ShapeRange.Height
+                            
+                        End With
+                        
+                    End If
+                    
+                Next
+            Next
+            
+        Else
+            MsgBox "This shape does Not have a tag."
+        End If
+        
+    Else
+        MsgBox "No shape selected."
+    End If
+    
+End Sub
+         */
+        #endregion
+
+        #region DeleteTaggedShapes
+        public void DeleteTaggedShapes(IRibbonControl control)
+        {
+            var myDocument = ThisAddIn.application.ActiveWindow;
+            string CrossSlideShapeId;
+               if(myDocument.Selection.Type==PpSelectionType.ppSelectionShapes)
+            {
+                if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA CROSS-SLIDE SHAPE"] != "")
+                {
+                    CrossSlideShapeId = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA CROSS-SLIDE SHAPE"];
+
+
+                    for (int SlideCount = 1; SlideCount <= ThisAddIn.application.ActivePresentation.Slides.Count; SlideCount++) {
+                        foreach(Shape  Shape in ThisAddIn.application.ActivePresentation.Slides[SlideCount].Shapes) {
+
+
+
+                            if (Shape.Tags["INSTRUMENTA CROSS-SLIDE SHAPE"] == CrossSlideShapeId)
+                                Shape.Delete();
+
+                    
+
+                }
+                    }
+
+
+                }
+                else
+                {
+                    MessageBox.Show("This shape does Not have a tag.");
+                }
+            }
+            else
+            {
+                MessageBox.Show("No shape selected.");
+            }
+
+        }
+        /*
+         Sub DeleteTaggedShapes()
+    Set myDocument = Application.ActiveWindow
+    Dim CrossSlideShapeId As String
+    
+    If myDocument.Selection.Type = ppSelectionShapes Then
+        
+        If Not Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA CROSS-SLIDE SHAPE") = "" Then
+            CrossSlideShapeId = Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA CROSS-SLIDE SHAPE")
+            
+            For SlideCount = 1 To ActivePresentation.Slides.Count
+                For Each Shape In ActivePresentation.Slides(SlideCount).Shapes
+                    
+                    If Shape.Tags("INSTRUMENTA CROSS-SLIDE SHAPE") = CrossSlideShapeId Then
+                        
+                        Shape.Delete
+                        
+                    End If
+                    
+                Next
+            Next
+            
+        Else
+            MsgBox "This shape does Not have a tag."
+        End If
+        
+    Else
+        MsgBox "No shape selected."
+    End If
+    
+End Sub
+         */
+        #endregion
+
+        #region ObjectsMarginsToZero
+        public void ObjectsMarginsToZero(IRibbonControl control)
+        {
+            var myDocument =ThisAddIn.application.ActiveWindow;
+            if(!(myDocument.Selection.Type==PpSelectionType.ppSelectionShapes || myDocument.Selection.Type == PpSelectionType.ppSelectionText))
+            {
+                MessageBox.Show("No shapes selected.");
+            }
+            else
+            {
+                if(myDocument.Selection.ShapeRange.HasTextFrame==MsoTriState.msoCTrue || myDocument.Selection.ShapeRange.HasTextFrame == MsoTriState.msoTrue)
+                {
+
+                    myDocument.Selection.ShapeRange.TextFrame.MarginBottom = 0;
+                    myDocument.Selection.ShapeRange.TextFrame.MarginLeft = 0       ;
+                    myDocument.Selection.ShapeRange.TextFrame.MarginRight = 0      ;
+                    myDocument.Selection.ShapeRange.TextFrame.MarginTop = 0        ;
+
+                }
+                else
+                {
+                    MessageBox.Show("No text capable shape selected.");
+                }
+            }
+        }
+        /*
+         Sub ObjectsMarginsToZero()
+    
+    Set myDocument = Application.ActiveWindow
+    
+    If Not (myDocument.Selection.Type = ppSelectionShapes Or myDocument.Selection.Type = ppSelectionText) Then
+        MsgBox "No shapes selected."
+    Else
+    
+    If myDocument.Selection.ShapeRange.HasTextFrame Then
+    
+        With myDocument.Selection.ShapeRange.TextFrame
+        .MarginBottom = 0
+        .MarginLeft = 0
+        .MarginRight = 0
+        .MarginTop = 0
+        
+    End With
+    
+    Else
+    
+    MsgBox "No text capable shape selected."
+    
+    End If
+    
+    End If
+    
+End Sub
+         */
+        #endregion
+
+
+        #region ObjectsMarginsIncrease
+        public void ObjectsMarginsIncrease(IRibbonControl control)
+        {
+            var myDocument = ThisAddIn.application.ActiveWindow;
+            if (!(myDocument.Selection.Type == PpSelectionType.ppSelectionShapes || myDocument.Selection.Type == PpSelectionType.ppSelectionText))
+            {
+                MessageBox.Show("No shapes selected.");
+            }
+            else
+            {
+                if (myDocument.Selection.ShapeRange.HasTextFrame == MsoTriState.msoCTrue || myDocument.Selection.ShapeRange.HasTextFrame == MsoTriState.msoTrue)
+                {
+
+                    myDocument.Selection.ShapeRange.TextFrame.MarginBottom += (float)0.2;
+                    myDocument.Selection.ShapeRange.TextFrame.MarginLeft   += (float)0.2;
+                    myDocument.Selection.ShapeRange.TextFrame.MarginRight  += (float)0.2;
+                    myDocument.Selection.ShapeRange.TextFrame.MarginTop    += (float)0.2;
+
+                }
+                else
+                {
+                    MessageBox.Show("No text capable shape selected.");
+                }
+            }
+        }
+
+        /*
+         Sub ObjectsMarginsIncrease()
+    
+    Set myDocument = Application.ActiveWindow
+    
+    If Not (myDocument.Selection.Type = ppSelectionShapes Or myDocument.Selection.Type = ppSelectionText) Then
+        MsgBox "No shapes selected."
+    Else
+    
+    If myDocument.Selection.ShapeRange.HasTextFrame Then
+    
+    With myDocument.Selection.ShapeRange.TextFrame
+         .MarginBottom = .MarginBottom + 0.2
+        .MarginLeft = .MarginLeft + 0.2
+        .MarginRight = .MarginRight + 0.2
+        .MarginTop = .MarginTop + 0.2
+        
+    End With
+    
+    Else
+    
+    MsgBox "No text capable shape selected."
+    
+    End If
+    
+    End If
+End Sub
+
+         */
+        #endregion
+
+        #region ObjectsMarginsDecrease
+        public void ObjectsMarginsDecrease(IRibbonControl control)
+        {
+            var myDocument = ThisAddIn.application.ActiveWindow;
+            if (!(myDocument.Selection.Type == PpSelectionType.ppSelectionShapes || myDocument.Selection.Type == PpSelectionType.ppSelectionText))
+            {
+                MessageBox.Show("No shapes selected.");
+            }
+            else
+            {
+                if (myDocument.Selection.ShapeRange.HasTextFrame == MsoTriState.msoCTrue || myDocument.Selection.ShapeRange.HasTextFrame == MsoTriState.msoTrue)
+                {
+
+                    if(myDocument.Selection.ShapeRange.TextFrame.MarginBottom>=0.2)
+                        myDocument.Selection.ShapeRange.TextFrame.MarginBottom -= (float)0.2;
+                    if(myDocument.Selection.ShapeRange.TextFrame.MarginLeft>=0.2)
+                        myDocument.Selection.ShapeRange.TextFrame.MarginLeft -= (float)0.2;
+                    if(myDocument.Selection.ShapeRange.TextFrame.MarginRight>=0.2)
+                       myDocument.Selection.ShapeRange.TextFrame.MarginRight -= (float)0.2;
+                    if(myDocument.Selection.ShapeRange.TextFrame.MarginTop>=0.2)
+                       myDocument.Selection.ShapeRange.TextFrame.MarginTop -= (float)0.2;
+
+                }
+                else
+                {
+                    MessageBox.Show("No text capable shape selected.");
+                }
+            }
+        }
+        /*
+         Sub ObjectsMarginsDecrease()
+    
+    Set myDocument = Application.ActiveWindow
+    
+    If Not (myDocument.Selection.Type = ppSelectionShapes Or myDocument.Selection.Type = ppSelectionText) Then
+        MsgBox "No shapes selected."
+    Else
+    
+    If myDocument.Selection.ShapeRange.HasTextFrame Then
+    
+    With myDocument.Selection.ShapeRange.TextFrame
+        If .MarginBottom >= 0.2 Then
+            .MarginBottom = .MarginBottom - 0.2
+        End If
+        If .MarginLeft >= 0.2 Then
+            .MarginLeft = .MarginLeft - 0.2
+        End If
+        If .MarginRight >= 0.2 Then
+            .MarginRight = .MarginRight - 0.2
+        End If
+        If .MarginTop >= 0.2 Then
+            .MarginTop = .MarginTop - 0.2
+        End If
+        
+    End With
+    
+    Else
+    
+    MsgBox "No text capable shape selected."
+    
+    End If
+    
+    End If
+End Sub
+
          */
         #endregion
         #region Misc

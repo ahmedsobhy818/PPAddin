@@ -164,13 +164,17 @@
 					</splitButton>
 					<separator id="CopyShapeToSeparator" />
 					<button id="CreateMultiSlideShape" label="Copy shape to multiple slides (multislide shape)" showLabel="false" imageMso="MasterDocumentCreateSubdocument" onAction="ShowFormCopyShapeToMultipleSlides" />
-					<!--/////////////////////////////////////////////////////////////////////////////////-->
+					
 					<button id="UpdateMultiSlideShape" label="Update position and dimensions of selected multislide shape on all slides" showLabel="false" imageMso="MasterDocumentInsertSubdocument" onAction="UpdateTaggedShapePositionAndDimensions" />
+					
 					<button id="DeleteMultislideShape" label="Delete selected multislide shape on all slides" showLabel="false" imageMso="MasterDocumentUnlinkSubdocument" onAction="DeleteTaggedShapes" />
+					
 					<separator id="TextMargins" />
 					<button id="RemoveMargins" label="Remove margins" showLabel="false" imageMso="PageMarginsGallery" onAction="ObjectsMarginsToZero" />
+					
 					<button id="IncreaseMargins" label="Increase margins" showLabel="false" imageMso="UpArrow2" onAction="ObjectsMarginsIncrease" />
 					<button id="DecreaseMargins" label="Decrease margins" showLabel="false" imageMso="DownArrow2" onAction="ObjectsMarginsDecrease" />
+				<!--/////////////////////////////////////////////////////////////////////////////////-->
 				</group>
 			</tab>
 		</tabs>
