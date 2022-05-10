@@ -174,8 +174,109 @@
 					
 					<button id="IncreaseMargins" label="Increase margins" showLabel="false" imageMso="UpArrow2" onAction="ObjectsMarginsIncrease" />
 					<button id="DecreaseMargins" label="Decrease margins" showLabel="false" imageMso="DownArrow2" onAction="ObjectsMarginsDecrease" />
-				<!--/////////////////////////////////////////////////////////////////////////////////-->
+					<button id="test" label="TEST" showLabel="false" getImage="getTestImage" onAction="doTest" />
+				
 				</group>
+			
+		  <group id="TableGroup" label="Tables" imageMso="TableInsert">
+               <gallery idMso="TableInsertGallery" showLabel="false" label="&#x200B;" />
+               <button idMso="TableInsertColumnsLeft" showLabel="false" />
+               <button idMso="TableInsertColumnsRight" showLabel="false" />
+               <button idMso="TableDeleteColumns" showLabel="false" />
+               <button idMso="TableInsertRowsAbove" showLabel="false" />
+               <button idMso="TableInsertRowsBelow" showLabel="false" />
+               <button idMso="TableDeleteRows" showLabel="false" />
+               <splitButton id="TableRowsDistributeSplitButton" size="normal" showLabel="false">
+               <button idMso="TableRowsDistribute" showLabel="false" />
+               <menu id="TableRowsDistributeMenu" itemSize="normal">
+                     <button id="TableDistributeRowsWithGaps" label="Distribute rows ignoring row gaps" showLabel="false" onAction="TableDistributeRowsWithGaps" />
+			   
+                  </menu>
+               </splitButton>
+               <splitButton id="TableColumnsDistributeSplitButton" size="normal" showLabel="false">
+               <button idMso="TableColumnsDistribute" showLabel="false" />
+               <menu id="TableColumnsDistributeMenu" itemSize="normal">
+                     <button id="TableDistributeColumnsWithGaps" label="Distribute columns ignoring column gaps" showLabel="false" onAction="TableDistributeColumnsWithGaps" />
+			      </menu>
+               </splitButton>
+               <splitButton id="TableQuickFormatSplitButton" size="normal" showLabel="false">
+                  <button id="TableQuickFormat" imageMso="TableAutoFormat" label="Quick format table" showLabel="false" onAction="TableQuickFormat" />
+				  
+                  <menu id="TableFormatMenu" itemSize="normal">
+                     <button idMso="TableStyleClearTable" showLabel="false" />
+                     <button id="TableRemoveBackgrounds" label="Remove cell fills" showLabel="false" onAction="TableRemoveBackgrounds" />
+					   
+                     <button id="TableRemoveBorders" label="Remove all borders" showLabel="false" onAction="TableRemoveBorders" />
+				  
+                  </menu>
+               </splitButton>
+               <button id="TableConvertTableToShapes" imageMso="ConvertTableToText" label="Convert table to shapes" showLabel="false" onAction="ConvertTableToShapes" />
+			  
+               <button id="TableTranspose" imageMso="ChartSwitchRowColumn" label="Transpose table" showLabel="false" onAction="TableTranspose" />
+			  
+               <splitButton id="TableSplitSplitButton" size="normal" showLabel="false">
+                  <button id="SplitTableByRowButton" imageMso="SplitTable" label="Split table by row" showLabel="false" onAction="SplitTableByRow" />
+				   
+                  <menu id="TableSplitMenu" itemSize="normal">
+                     <button id="SplitTableByColumnButton" label="Split table by column" showLabel="false" onAction="SplitTableByColumn" />
+				  
+                  </menu>
+               </splitButton>
+               <splitButton id="TableSumSplitButton" size="normal" showLabel="false">
+                  <button id="TableSumButton" imageMso="AutoSum" label="Sum column (values above selected cells)" showLabel="false" onAction="TableSum" />
+				     
+                  <menu id="TableSumMenu" itemSize="normal">
+                     <button id="TableRowSumButton" imageMso="AutoSum" label="Sum row (values left from selected cells)" showLabel="false" onAction="TableRowSum" />
+				  
+                  </menu>
+               </splitButton>
+               <separator id="separator7" />
+               <splitButton id="TableColumnGapsSplitButton" size="normal" showLabel="false">
+                  <button id="TableColumnGapsEven" imageMso="SpeakByRows" label="Add column gaps" showLabel="false" onAction="TableColumnGapsEven" />
+				   
+                  <menu id="TableColumnGapsMenu" itemSize="normal">
+                     <button id="TableColumnGapsOdd" imageMso="SpeakByRows" label="Add column gaps (including left and right sides)" showLabel="false" onAction="TableColumnGapsOdd" />
+					  
+                     <button id="TableColumnRemoveGaps" imageMso="Delete" label="Remove column gaps" showLabel="false" onAction="TableColumnRemoveGaps" />
+				  
+                  </menu>
+               </splitButton>
+               <button id="TableColumnIncreaseGaps" label="Increase column gaps" showLabel="false" imageMso="UpArrow2" onAction="TableColumnIncreaseGaps" />
+			  
+               <button id="TableColumnDecreaseGaps" label="Decrease column gaps" showLabel="false" imageMso="DownArrow2" onAction="TableColumnDecreaseGaps" />
+			 
+               <separator id="separator7a" />
+               <splitButton id="TableRowGapsSplitButton" size="normal" showLabel="false">
+                  <button id="TableRowGapsEven" imageMso="SpeakByColumns" label="Add row gaps" showLabel="false" onAction="TableRowGapsEven" />
+			 
+                  <menu id="TableRowGapsMenu" itemSize="normal">
+                     <button id="TableRowGapsOdd" imageMso="SpeakByColumns" label="Add row gaps (including top and bottom sides)" showLabel="false" onAction="TableRowGapsOdd" />
+					     
+                     <button id="TableRowRemoveGaps" imageMso="Delete" label="Remove row gaps" showLabel="false" onAction="TableRowRemoveGaps" />
+				  
+                  </menu>
+               </splitButton>
+               <button id="TableRowIncreaseGaps" label="Increase row gaps" showLabel="false" imageMso="UpArrow2" onAction="TableRowIncreaseGaps" />
+			  
+               <button id="TableRowDecreaseGaps" label="Decrease row gaps" showLabel="false" imageMso="DownArrow2" onAction="TableRowDecreaseGaps" />
+			  
+               <separator id="separator7b" />
+               <control idMso="ShadingColorPicker" showLabel="false" label="&#x200B;" />
+               <gallery idMso="TableBorderPenColorPicker" showLabel="false" label="&#x200B;" />
+               <control idMso="TableBordersMenu" showLabel="false" />
+               <separator id="separator8" />
+               <toggleButton idMso="TableCellAlignBottom" showLabel="false" />
+               <toggleButton idMso="TableCellAlignCenterVertically" showLabel="false" />
+               <toggleButton idMso="TableCellAlignTop" showLabel="false" />
+               <separator id="TableMargins" />
+               <button id="TableRemoveMargins" label="Remove margins of selected table or selected cells" showLabel="false" imageMso="PageMarginsGallery" onAction="TablesMarginsToZero" />
+			  
+               <button id="TableIncreaseMargins" label="Increase margins of selected table or selected cells" showLabel="false" imageMso="UpArrow2" onAction="TablesMarginsIncrease" />
+			  
+               <button id="TableDecreaseMargins" label="Decrease margins of selected table or selected cells" showLabel="false" imageMso="DownArrow2" onAction="TablesMarginsDecrease" />
+		  <!--///////////////////////////////////////////////////////////////////////-->	
+            </group>
+          
 			</tab>
 		</tabs>
 	</ribbon>

@@ -15,6 +15,7 @@ using System.Threading;
 using Application = System.Windows.Forms.Application;
 using TextFrame2 = Microsoft.Office.Interop.PowerPoint.TextFrame2;
 using System.Drawing;
+using PPAddin.Properties;
 // TODO:  Follow these steps to enable the Ribbon (XML) item:
 
 // 1: Copy the following code block into the ThisAddin, ThisWorkbook, or ThisDocument class.
@@ -2825,8 +2826,2781 @@ End Sub
 
          */
         #endregion
+
+
+        #region test
+        public void doTest(IRibbonControl control)
+        {
+            MessageBox.Show("testtttttttt");
+            ///var presentation=ThisAddIn.application.ActivePresentation;
+
+            // IAutoShape shape = (IAutoShape)presentation.Slides[0].Shapes.AppendShape(ShapeType.DoubleWave, new RectangleF(100, 100, 400, 200));
+
+            Microsoft.Office.Interop.PowerPoint.Shapes shapes = ThisAddIn.application.ActiveWindow.Selection.SlideRange[1].Shapes;
+
+            Shape shape = shapes.AddShape(MsoAutoShapeType.msoShapeRectangle, 50, 50, 100, 100);
+            string picUrl = @"C:\Users\Administrator\Desktop\image.jpg";
+            
+//shape.Fill. = FillFormatType.Picture;
+            
+//shape.Fill.PictureFill.Picture.Url = picUrl;
+
+        }
+        public Bitmap getTestImage(IRibbonControl control)
+        {
+            return Resource1.test ;
+        }
+
+        #endregion
+
+        #region TableDistributeRowsWithGaps
+        public void TableDistributeRowsWithGaps(IRibbonControl control)
+        {
+            var myDocument = ThisAddIn.application.ActiveWindow;
+            double TotalHeight;
+            double NumberOfRowsToDistribute;
+            TotalHeight = 0;
+            NumberOfRowsToDistribute = 0;
+
+            if (!(myDocument.Selection.Type == PpSelectionType.ppSelectionShapes || myDocument.Selection.Type == PpSelectionType.ppSelectionText))
+            {
+                MessageBox.Show("No table or cells selected.");
+            }
+            else
+            {
+                if(ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable==MsoTriState.msoCTrue || ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoTrue)
+                {
+                   var TypeOfGaps = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA ROWGAPS"];
+                    for( int RowsCount = 1;RowsCount<= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows.Count; RowsCount++)
+                    {
+                        for(int ColsCount = 1; ColsCount <=ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns.Count; ColsCount++)
+                        {
+                            if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Selected) 
+                            {
+                                if (!((RowsCount % 2 == 0 && TypeOfGaps == "even") ||( RowsCount % 2 != 0 && TypeOfGaps == "odd")))
+                                {
+                                    TotalHeight = TotalHeight + ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows[RowsCount].Height;
+                                    NumberOfRowsToDistribute = NumberOfRowsToDistribute + 1;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (NumberOfRowsToDistribute > 0)
+                    {
+                        for (int RowsCount = 1; RowsCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows.Count; RowsCount++)
+                        {
+                            for (int ColsCount = 1; ColsCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns.Count; ColsCount++)
+                            {
+
+
+
+                                if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Selected) 
+                                {
+
+                                    if (!((RowsCount % 2 == 0 && TypeOfGaps == "even") || (RowsCount % 2 != 0 && TypeOfGaps == "odd"))) 
+                                    {
+
+                                        ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows[RowsCount].Height = (float)(TotalHeight / NumberOfRowsToDistribute);
+                                        break;
+
+                                     }
+
+
+                                                }
+ 
+
+                            }
+                        }
+                     }
+
+
+
+
+                        }
+                else
+                {
+                    MessageBox.Show("No table or cells selected.");
+                }
+            }
+
+        }
+        /*
+         Sub TableDistributeRowsWithGaps()
+
+    Set myDocument = Application.ActiveWindow
+    Dim TotalHeight As Double
+    Dim NumberOfRowsToDistribute As Long
+    TotalHeight = 0
+    NumberOfRowsToDistribute = 0
+
+    If Not (myDocument.Selection.Type = ppSelectionShapes Or myDocument.Selection.Type = ppSelectionText) Then
+        MsgBox "No table or cells selected."
+    Else
+
+
+    If Application.ActiveWindow.Selection.ShapeRange.HasTable Then
+
+    With Application.ActiveWindow.Selection.ShapeRange.Table
+
+        TypeOfGaps = Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA ROWGAPS")
+
+        For RowsCount = 1 To .Rows.Count
+
+            For ColsCount = 1 To .Columns.Count
+
+                If .Cell(RowsCount, ColsCount).Selected Then
+
+                If Not ((RowsCount Mod 2 = 0 And TypeOfGaps = "even") Or (Not RowsCount Mod 2 = 0 And TypeOfGaps = "odd")) Then
+
+                TotalHeight = TotalHeight + .Rows(RowsCount).Height
+                NumberOfRowsToDistribute = NumberOfRowsToDistribute + 1
+                Exit For
+
+                End If
+
+
+                End If
+
+            Next ColsCount
+        Next RowsCount
+
+
+        If NumberOfRowsToDistribute > 0 Then
+
+        For RowsCount = 1 To .Rows.Count
+
+            For ColsCount = 1 To .Columns.Count
+
+                If .Cell(RowsCount, ColsCount).Selected Then
+
+                If Not ((RowsCount Mod 2 = 0 And TypeOfGaps = "even") Or (Not RowsCount Mod 2 = 0 And TypeOfGaps = "odd")) Then
+
+                .Rows(RowsCount).Height = TotalHeight / NumberOfRowsToDistribute
+                Exit For
+
+                End If
+
+
+                End If
+
+            Next ColsCount
+        Next RowsCount
+        End If
+
+    End With
+
+    Else
+
+    MsgBox "No table or cells selected."
+
+    End If
+
+    End If
+
+End Sub
+
+         */
+        #endregion
+
+        #region TableDistributeColumnsWithGaps
+        public void TableDistributeColumnsWithGaps(IRibbonControl control)
+        {
+            var myDocument = ThisAddIn.application.ActiveWindow;
+            double TotalWidth=0;
+            float NumberOfColumnsToDistribute = 0;
+            if (!(myDocument.Selection.Type == PpSelectionType.ppSelectionShapes || myDocument.Selection.Type == PpSelectionType.ppSelectionText))
+            {
+                MessageBox.Show("No table or cells selected.");
+            }
+            else
+            {
+                if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoCTrue || ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoTrue)
+                {
+                    var TypeOfGaps = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA COLUMNGAPS"];
+
+                    for (int ColsCount = 1; ColsCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns.Count; ColsCount++)
+                    
+                    {
+                        for (int RowsCount = 1; RowsCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows.Count; RowsCount++)
+                        {
+                            if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Selected)
+                            {
+                                if (!((ColsCount % 2 == 0 && TypeOfGaps == "even") || (ColsCount % 2 != 0 && TypeOfGaps == "odd")))
+                                {
+                                    TotalWidth = TotalWidth + ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns[ColsCount].Width ;
+                                    NumberOfColumnsToDistribute = NumberOfColumnsToDistribute + 1;
+                                    break;
+                                }
+
+                            
+                            }
+                        }
+                    }
+                    if (NumberOfColumnsToDistribute > 0)
+                    {
+                        for (int ColsCount = 1; ColsCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns.Count; ColsCount++)
+                        {
+                            for (int RowsCount = 1; RowsCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows.Count; RowsCount++)
+                            {
+
+
+                                if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Selected)
+                                {
+
+                                    if (!((ColsCount % 2 == 0 && TypeOfGaps == "even") || (ColsCount % 2 != 0 && TypeOfGaps == "odd")))
+                                    {
+
+                                        ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns[ColsCount].Width  = (float)(TotalWidth / NumberOfColumnsToDistribute);
+                                        break;
+
+                                    }
+
+
+                                }
+                            }
+                        }
+                    }
+
+
+
+
+                }
+                else
+                {
+                    MessageBox.Show("No table or cells selected.");
+                }
+            }
+        }
+
+        /*
+         Sub TableDistributeColumnsWithGaps()
+
+    Set myDocument = Application.ActiveWindow
+    Dim TotalWidth As Double
+    Dim NumberOfColumnsToDistribute As Long
+    TotalWidth = 0
+    NumberOfColumnsToDistribute = 0
+     
+    If Not (myDocument.Selection.Type = ppSelectionShapes Or myDocument.Selection.Type = ppSelectionText) Then
+        MsgBox "No table or cells selected."
+    Else
+    
+        
+    If Application.ActiveWindow.Selection.ShapeRange.HasTable Then
+        
+    With Application.ActiveWindow.Selection.ShapeRange.Table
+        
+        TypeOfGaps = Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA COLUMNGAPS")
+        
+        For ColsCount = 1 To .Columns.Count
+        
+            For RowsCount = 1 To .Rows.Count
+                
+                If .Cell(RowsCount, ColsCount).Selected Then
+                    
+                If Not ((ColsCount Mod 2 = 0 And TypeOfGaps = "even") Or (Not ColsCount Mod 2 = 0 And TypeOfGaps = "odd")) Then
+                
+                TotalWidth = TotalWidth + .Columns(ColsCount).Width
+                NumberOfColumnsToDistribute = NumberOfColumnsToDistribute + 1
+                Exit For
+                    
+                End If
+                    
+                
+                End If
+                
+            Next RowsCount
+        Next ColsCount
+        
+        
+        If NumberOfColumnsToDistribute > 0 Then
+        For ColsCount = 1 To .Columns.Count
+        
+            For RowsCount = 1 To .Rows.Count
+                
+                If .Cell(RowsCount, ColsCount).Selected Then
+                    
+                If Not ((ColsCount Mod 2 = 0 And TypeOfGaps = "even") Or (Not ColsCount Mod 2 = 0 And TypeOfGaps = "odd")) Then
+                
+                .Columns(ColsCount).Width = TotalWidth / NumberOfColumnsToDistribute
+                Exit For
+                    
+                End If
+                    
+                
+                End If
+                
+            Next RowsCount
+        Next ColsCount
+        End If
+        
+    End With
+    
+    Else
+    
+    MsgBox "No table or cells selected."
+    
+    End If
+    
+    End If
+
+End Sub
+
+         
+         
+         */
+        #endregion
+        #region TableQuickFormat
+        public void TableQuickFormat(IRibbonControl control)
+        {
+            var myDocument = ThisAddIn.application.ActiveWindow;
+            if (!(myDocument.Selection.Type == PpSelectionType.ppSelectionShapes || myDocument.Selection.Type == PpSelectionType.ppSelectionText))
+            {
+                MessageBox.Show("No table selected.");
+            }
+            else
+            {
+                if(ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Count==1 && (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable==MsoTriState.msoCTrue || ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoTrue))
+                {
+                    TableRemoveBackgrounds(control);
+                    TableRemoveBorders(control);
+                    //With ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table
+
+                    if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA COLUMNGAPS"] != "")
+                        TableColumnRemoveGaps(control );
+
+
+
+                    if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA ROWGAPS"] != "")
+                        TableRowRemoveGaps(control);
+
+                    for(int RowCount=1; RowCount<= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows.Count; RowCount++)
+                    {
+                        for (int ColumnCount = 1; ColumnCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns.Count; ColumnCount++)
+                        {
+                            ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowCount, ColumnCount).Shape.TextFrame.TextRange.Font.Color.RGB = Color.Black.ToArgb();//;
+                        }
+                    }
+
+                    for(int CellCount=1; CellCount<= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows[1].Cells.Count; CellCount++)
+                    {
+                        ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows[1].Cells[CellCount].Borders[PpBorderType.ppBorderTop].Weight = 0;
+                        ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows[1].Cells[CellCount].Borders[PpBorderType.ppBorderBottom ].Weight = 2;
+                        ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows[1].Cells[CellCount].Borders[PpBorderType.ppBorderBottom].ForeColor.RGB = Color.Black.ToArgb();//;
+                        ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows[1].Cells[CellCount].Shape.Fill.Visible = MsoTriState.msoFalse;
+                        ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows[1].Cells[CellCount].Shape.TextFrame.VerticalAnchor = MsoVerticalAnchor.msoAnchorBottom;
+                        ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows[1].Cells[CellCount].Shape.TextFrame.TextRange.Font.Bold = MsoTriState.msoTrue;
+                        ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows[1].Cells[CellCount].Shape.TextFrame.TextRange.Font.Color.RGB = Color.Black.ToArgb();//;
+
+                    }
+
+                    TableColumnGaps ("even", 20);
+                    /*
+                     */
+
+
+                }
+                else
+                {
+                    MessageBox.Show("No table selected or too many shapes selected. Select one table.");
+                }
+            }
+        }
+        /*
+         Sub TableQuickFormat()
+
+Set myDocument = Application.ActiveWindow
+
+If Not (myDocument.Selection.Type = ppSelectionShapes Or myDocument.Selection.Type = ppSelectionText) Then
+    MsgBox "No table selected."
+Else
+
+    If (Application.ActiveWindow.Selection.ShapeRange.Count = 1) And Application.ActiveWindow.Selection.ShapeRange.HasTable Then
+
+        With Application.ActiveWindow.Selection.ShapeRange.Table
+
+            TableRemoveBackgrounds
+            TableRemoveBorders
+
+            If Not Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA COLUMNGAPS") = "" Then
+                TableColumnRemoveGaps
+            End If
+
+            If Not Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA ROWGAPS") = "" Then
+                TableRowRemoveGaps
+            End If
+
+            For RowCount = 1 To .Rows.Count
+
+                For ColumnCount = 1 To .Columns.Count
+
+                    .Cell(RowCount, ColumnCount).Shape.TextFrame.TextRange.Font.Color.RGB = RGB(0, 0, 0)
+
+                Next
+
+            Next
+
+            For CellCount = 1 To .Rows(1).Cells.Count
+
+                .Rows(1).Cells(CellCount).Borders(ppBorderTop).Weight = 0
+                .Rows(1).Cells(CellCount).Borders(ppBorderBottom).Weight = 2
+                .Rows(1).Cells(CellCount).Borders(ppBorderBottom).ForeColor.RGB = RGB(0, 0, 0)
+                .Rows(1).Cells(CellCount).Shape.Fill.Visible = msoFalse
+                .Rows(1).Cells(CellCount).Shape.TextFrame.VerticalAnchor = msoAnchorBottom
+                .Rows(1).Cells(CellCount).Shape.TextFrame.TextRange.Font.Bold = msoTrue
+                .Rows(1).Cells(CellCount).Shape.TextFrame.TextRange.Font.Color.RGB = RGB(0, 0, 0)
+
+            Next CellCount
+
+            TableColumnGaps "even", 20
+
+        End With
+
+    Else
+
+        MsgBox "No table selected or too many shapes selected. Select one table."
+
+    End If
+
+End If
+
+End Sub
+
+         */
+
+        #endregion
+
+        #region TableRemoveBackgrounds
+        public void TableRemoveBackgrounds(IRibbonControl control)
+        {
+            var myDocument = ThisAddIn.application.ActiveWindow;
+            if (!(myDocument.Selection.Type == PpSelectionType.ppSelectionShapes || myDocument.Selection.Type == PpSelectionType.ppSelectionText))
+            {
+                MessageBox.Show("No table selected.");
+            }
+            else
+            {
+                if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Count == 1 && (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoCTrue || ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoTrue))
+                {
+                    //ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table
+                    ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.HorizBanding = false;
+                    ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.VertBanding = false;
+
+
+                    ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Fill.Solid();
+                     ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Fill.ForeColor.RGB = Color.White.ToArgb();// RGB(255, 255, 255)
+                     ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Fill.Visible = MsoTriState.msoFalse;
+
+                    ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Background.Fill.Solid();
+                    ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Background.Fill.ForeColor.RGB = Color.White.ToArgb();//RGB(255, 255, 255)
+                    ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Background.Fill.Visible = MsoTriState.msoFalse;
+
+                    ProgressForm pf = new ProgressForm();
+                    pf.Show();
+                    for(int RowCount=1; RowCount<= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows.Count; RowCount++)
+                    {
+                        pf.SetProgress((RowCount * 100) / ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows.Count);
+                        for (int ColumnCount = 1; ColumnCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns.Count; ColumnCount++)
+                        {
+                            ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowCount, ColumnCount).Shape.Fill.Solid();
+                            ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowCount, ColumnCount).Shape.Fill.ForeColor.RGB = Color.White.ToArgb();
+                            ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowCount, ColumnCount).Shape.Fill.Visible = MsoTriState.msoFalse;
+                        }
+                        pf.Close();
+                    }
+                
+                }
+                else
+                {
+                    MessageBox.Show("No table selected or too many shapes selected. Select one table.");
+                }
+            }
+        }
+        /*
+         Sub TableRemoveBackgrounds()
+    
+    Set myDocument = Application.ActiveWindow
+    
+    If Not (myDocument.Selection.Type = ppSelectionShapes Or myDocument.Selection.Type = ppSelectionText) Then
+        MsgBox "No table selected."
+    Else
+        
+        If (Application.ActiveWindow.Selection.ShapeRange.Count = 1) And Application.ActiveWindow.Selection.ShapeRange.HasTable Then
+            
+            With Application.ActiveWindow.Selection.ShapeRange.Table
+
+                .HorizBanding = False
+                .VertBanding = False
+                
+                Application.ActiveWindow.Selection.ShapeRange.Fill.Solid
+                Application.ActiveWindow.Selection.ShapeRange.Fill.ForeColor.RGB = RGB(255, 255, 255)
+                Application.ActiveWindow.Selection.ShapeRange.Fill.Visible = msoFalse
+                
+                .Background.Fill.Solid
+                .Background.Fill.ForeColor.RGB = RGB(255, 255, 255)
+                .Background.Fill.Visible = msoFalse
+                
+                ProgressForm.Show
+                
+                For RowCount = 1 To .Rows.Count
+                    
+                SetProgress (RowCount / .Rows.Count * 100)
+                    
+                    For ColumnCount = 1 To .Columns.Count
+                        
+                        .Cell(RowCount, ColumnCount).Shape.Fill.Solid
+                        .Cell(RowCount, ColumnCount).Shape.Fill.ForeColor.RGB = RGB(255, 255, 255)
+                        .Cell(RowCount, ColumnCount).Shape.Fill.Visible = msoFalse
+                    Next
+                    
+                Next
+                
+                ProgressForm.Hide
+                
+            End With
+            
+        Else
+            
+            MsgBox "No table selected or too many shapes selected. Select one table."
+            
+        End If
+        
+    End If
+    
+End Sub
+
+         */
+        #endregion
+        #region TableRemoveBorders
+        public void TableRemoveBorders(IRibbonControl control)
+        {
+            var myDocument = ThisAddIn.application.ActiveWindow;
+            if (!(myDocument.Selection.Type == PpSelectionType.ppSelectionShapes || myDocument.Selection.Type == PpSelectionType.ppSelectionText))
+            {
+                MessageBox.Show("No table selected.");
+            }
+            else
+            {
+                if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Count == 1 && (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoCTrue || ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoTrue))
+                {
+                    //ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table
+                    ProgressForm pf = new ProgressForm();
+                    pf.Show();
+                    for (int RowCount = 1; RowCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows.Count; RowCount++)
+                    {
+                        pf.SetProgress((RowCount * 100) / ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows.Count);
+                        for (int ColumnCount = 1; ColumnCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns.Count; ColumnCount++)
+                        {
+                             ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowCount, ColumnCount).Borders[PpBorderType.ppBorderLeft].ForeColor.RGB = Color.White.ToArgb();
+                             ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowCount, ColumnCount).Borders[PpBorderType.ppBorderRight].ForeColor.RGB =Color.White.ToArgb();
+                             ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowCount, ColumnCount).Borders[PpBorderType.ppBorderTop].ForeColor.RGB = Color.White.ToArgb();
+                             ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowCount, ColumnCount).Borders[PpBorderType.ppBorderBottom].ForeColor.RGB= Color.White.ToArgb();
+                             
+                             ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowCount, ColumnCount).Borders[PpBorderType.ppBorderLeft].Weight = 0;
+                             ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowCount, ColumnCount).Borders[PpBorderType.ppBorderRight].Weight = 0 ;
+                             ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowCount, ColumnCount).Borders[PpBorderType.ppBorderTop].Weight = 0   ;
+                             ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowCount, ColumnCount).Borders[PpBorderType.ppBorderBottom].Weight = 0;
+                             
+                             ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowCount, ColumnCount).Borders[PpBorderType.ppBorderLeft].Visible = MsoTriState.msoFalse;
+                            ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowCount, ColumnCount).Borders[PpBorderType.ppBorderRight].Visible = MsoTriState.msoFalse;
+                             ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowCount, ColumnCount).Borders[PpBorderType.ppBorderTop].Visible =   MsoTriState.msoFalse ;
+                             ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowCount, ColumnCount).Borders[PpBorderType.ppBorderBottom].Visible = MsoTriState.msoFalse;
+                        }
+                    }
+                    pf.Close();
+                           
+                        }
+                else
+                {
+                    MessageBox.Show("No table selected or too many shapes selected. Select one table.");
+                }
+            }
+        }
+
+
+        /*
+         Sub TableRemoveBorders()
+    
+    Set myDocument = Application.ActiveWindow
+    
+    If Not (myDocument.Selection.Type = ppSelectionShapes Or myDocument.Selection.Type = ppSelectionText) Then
+        MsgBox "No table selected."
+    Else
+        
+        If (Application.ActiveWindow.Selection.ShapeRange.Count = 1) And Application.ActiveWindow.Selection.ShapeRange.HasTable Then
+            
+            With Application.ActiveWindow.Selection.ShapeRange.Table
+            
+                ProgressForm.Show
+                
+                For RowCount = 1 To .Rows.Count
+                    
+                SetProgress (RowCount / .Rows.Count * 100)
+                    
+                    For ColumnCount = 1 To .Columns.Count
+                        
+                        .Cell(RowCount, ColumnCount).Borders(ppBorderLeft).ForeColor.RGB = RGB(255, 255, 255)
+                        .Cell(RowCount, ColumnCount).Borders(ppBorderRight).ForeColor.RGB = RGB(255, 255, 255)
+                        .Cell(RowCount, ColumnCount).Borders(ppBorderTop).ForeColor.RGB = RGB(255, 255, 255)
+                        .Cell(RowCount, ColumnCount).Borders(ppBorderBottom).ForeColor.RGB = RGB(255, 255, 255)
+                        
+                        .Cell(RowCount, ColumnCount).Borders(ppBorderLeft).Weight = 0
+                        .Cell(RowCount, ColumnCount).Borders(ppBorderRight).Weight = 0
+                        .Cell(RowCount, ColumnCount).Borders(ppBorderTop).Weight = 0
+                        .Cell(RowCount, ColumnCount).Borders(ppBorderBottom).Weight = 0
+                        
+                        .Cell(RowCount, ColumnCount).Borders(ppBorderLeft).Visible = msoFalse
+                        .Cell(RowCount, ColumnCount).Borders(ppBorderRight).Visible = msoFalse
+                        .Cell(RowCount, ColumnCount).Borders(ppBorderTop).Visible = msoFalse
+                        .Cell(RowCount, ColumnCount).Borders(ppBorderBottom).Visible = msoFalse
+                    Next
+                    
+                Next
+                
+                ProgressForm.Hide
+                
+            End With
+            
+        Else
+            
+            MsgBox "No table selected or too many shapes selected. Select one table."
+            
+        End If
+        
+    End If
+    
+End Sub
+
+         */
+        #endregion region
+
+        #region ConvertTableToShapes
+        public void ConvertTableToShapes(IRibbonControl control)
+        {
+            var myDocument = ThisAddIn.application.ActiveWindow;
+            if(myDocument.Selection.Type != PpSelectionType.ppSelectionShapes)
+            {
+                MessageBox.Show("Please select a table.");
+            }
+
+            else if (myDocument.Selection.ShapeRange.HasTable==MsoTriState.msoCTrue|| myDocument.Selection.ShapeRange.HasTable == MsoTriState.msoTrue)
+            {
+                float TableTop = myDocument.Selection.ShapeRange.Top;
+                float TableLeft = myDocument.Selection.ShapeRange.Left;
+
+
+              var  TypeOfColumnGaps = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA COLUMNGAPS"];
+              var TypeOfRowGaps = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA ROWGAPS"];
+
+                ProgressForm pf = new ProgressForm();
+                pf.Show();
+                for (int RowsCount = 1; RowsCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows.Count; RowsCount++)
+                {
+                    pf.SetProgress((RowsCount * 100) / ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows.Count);
+                    for (int ColsCount = 1; ColsCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns.Count; ColsCount++)
+                    {
+                        if (!((ColsCount%2==0 && TypeOfColumnGaps == "even")||(ColsCount%2!=0 && TypeOfColumnGaps=="odd")||(RowsCount%2==0 && TypeOfRowGaps=="even")||(RowsCount%2!=0 && TypeOfRowGaps=="odd")))
+                        {
+                            var NewShape = myDocument.Selection.SlideRange.Shapes.AddShape(MsoAutoShapeType.msoShapeRectangle, TableLeft, TableTop, myDocument.Selection.ShapeRange.Table.Columns[ColsCount].Width, myDocument.Selection.ShapeRange.Table.Rows[RowsCount].Height);
+                                        NewShape.TextFrame.MarginBottom = myDocument.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Shape.TextFrame.MarginBottom;
+                                        NewShape.TextFrame.MarginLeft = myDocument.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Shape.TextFrame.MarginLeft    ;
+                                        NewShape.TextFrame.MarginRight = myDocument.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Shape.TextFrame.MarginRight  ;
+                                        NewShape.TextFrame.MarginTop = myDocument.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Shape.TextFrame.MarginTop;
+                            if (myDocument.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Shape.TextFrame.TextRange.Text != "")
+                            {
+                                myDocument.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Shape.TextFrame.TextRange.Cut();
+                                NewShape.TextFrame.TextRange.Paste();
+                            }
+                            NewShape.TextFrame.TextRange.ParagraphFormat.Alignment = myDocument.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Shape.TextFrame.TextRange.ParagraphFormat.Alignment;
+                            NewShape.TextFrame.TextRange.ParagraphFormat.BaseLineAlignment = myDocument.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Shape.TextFrame.TextRange.ParagraphFormat.BaseLineAlignment;
+                            NewShape.Fill.ForeColor.RGB = myDocument.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Shape.Fill.ForeColor.RGB;
+                            NewShape.Line.ForeColor.RGB = myDocument.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Borders[PpBorderType.ppBorderBottom].ForeColor.RGB;
+                        }
+                        TableLeft = TableLeft + ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns[ColsCount].Width;
+                        
+                    }
+
+                    TableLeft = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Left;
+                    TableTop = TableTop + ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows[RowsCount].Height;
+
+                }
+                pf.Close();
+                ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Delete();
+
+            }
+            else
+            {
+                MessageBox.Show("No table selected.");
+            }
+        }
+
+        /*
+         Sub ConvertTableToShapes()
+    
+    Set myDocument = Application.ActiveWindow
+            
+    If Not myDocument.Selection.Type = ppSelectionShapes Then
+    MsgBox "Please select a table."
+    
+    ElseIf myDocument.Selection.ShapeRange.HasTable Then
+    
+    TableTop = myDocument.Selection.ShapeRange.Top
+    TableLeft = myDocument.Selection.ShapeRange.Left
+    
+    TypeOfColumnGaps = Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA COLUMNGAPS")
+    TypeOfRowGaps = Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA ROWGAPS")
+    
+    ProgressForm.Show
+    
+    For RowsCount = 1 To myDocument.Selection.ShapeRange.Table.Rows.Count
+    
+    SetProgress (RowsCount / myDocument.Selection.ShapeRange.Table.Rows.Count * 100)
+    
+        For ColsCount = 1 To myDocument.Selection.ShapeRange.Table.Columns.Count
+            
+            If Not ((ColsCount Mod 2 = 0 And TypeOfColumnGaps = "even") Or (Not ColsCount Mod 2 = 0 And TypeOfColumnGaps = "odd") Or (RowsCount Mod 2 = 0 And TypeOfRowGaps = "even") Or (Not RowsCount Mod 2 = 0 And TypeOfRowGaps = "odd")) Then
+            
+            Set NewShape = myDocument.Selection.SlideRange.Shapes.AddShape(Type:=msoShapeRectangle, Left:=TableLeft, Top:=TableTop, Width:=myDocument.Selection.ShapeRange.Table.Columns(ColsCount).Width, Height:=myDocument.Selection.ShapeRange.Table.Rows(RowsCount).Height)
+            
+            With NewShape
+                .TextFrame.MarginBottom = myDocument.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Shape.TextFrame.MarginBottom
+                .TextFrame.MarginLeft = myDocument.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Shape.TextFrame.MarginLeft
+                .TextFrame.MarginRight = myDocument.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Shape.TextFrame.MarginRight
+                .TextFrame.MarginTop = myDocument.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Shape.TextFrame.MarginTop
+                
+                If Not myDocument.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Shape.TextFrame.TextRange.Text = "" Then
+                    myDocument.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Shape.TextFrame.TextRange.Cut
+                    .TextFrame.TextRange.Paste
+                End If
+                
+                .TextFrame.TextRange.ParagraphFormat.Alignment = myDocument.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Shape.TextFrame.TextRange.ParagraphFormat.Alignment
+                .TextFrame.TextRange.ParagraphFormat.BaseLineAlignment = myDocument.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Shape.TextFrame.TextRange.ParagraphFormat.BaseLineAlignment
+                .Fill.ForeColor.RGB = myDocument.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Shape.Fill.ForeColor.RGB
+                .Line.ForeColor.RGB = myDocument.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Borders(ppBorderBottom).ForeColor.RGB
+            End With
+            
+            End If
+            
+            TableLeft = TableLeft + Application.ActiveWindow.Selection.ShapeRange.Table.Columns(ColsCount).Width
+            
+        Next ColsCount
+        
+        
+        TableLeft = Application.ActiveWindow.Selection.ShapeRange.Left
+        TableTop = TableTop + Application.ActiveWindow.Selection.ShapeRange.Table.Rows(RowsCount).Height
+        
+    Next RowsCount
+    
+    ProgressForm.Hide
+    
+    Application.ActiveWindow.Selection.ShapeRange.Delete
+    
+    Else
+    
+    MsgBox "No table selected."
+    
+    End If
+       
+End Sub
+
+         */
+        #endregion
+
+        #region TableTranspose
+        public void TableTranspose(IRibbonControl control)
+        {
+            var myDocument = ThisAddIn.application.ActiveWindow;
+            if(!(myDocument.Selection.Type== PpSelectionType.ppSelectionShapes || myDocument.Selection.Type == PpSelectionType.ppSelectionText))
+            {
+                MessageBox.Show("No table selected.");
+            }
+            else
+            {
+                if(ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Count == 1 && (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable==MsoTriState.msoCTrue|| ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoTrue))
+                {
+
+                    // ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table
+
+                    var CopyTable = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Duplicate();
+                    for(int RowsCount= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows.Count; RowsCount >= 2; RowsCount--)
+                    {
+                        CopyTable.Table.Rows[RowsCount].Delete();
+                    }
+                    for (int ColsCount = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns.Count; ColsCount >= 2; ColsCount--)
+                    {
+                        CopyTable.Table.Columns[ColsCount].Delete();
+                    }
+                    for (int RowsCount = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows.Count; RowsCount >= 2; RowsCount--)
+                    {
+                        CopyTable.Table.Columns.Add();
+                    }
+                    for (int ColsCount = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns.Count; ColsCount >= 2; ColsCount--)
+                    {
+                        CopyTable.Table.Rows.Add();
+                    }
+                    CopyTable.Width =ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Width;
+                    CopyTable.Top =  ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Top;
+                    CopyTable.Left = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Left;
+
+                    for(int RowsCount=1; RowsCount<= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows.Count; RowsCount++)
+                    {
+                        for (int ColsCount = 1; ColsCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns.Count; ColsCount++)
+                        {
+                            ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Shape.TextFrame2.TextRange.Cut();
+                            CopyTable.Table.Cell(ColsCount, RowsCount).Shape.TextFrame2.TextRange.Paste();
+                        }
+                    }
+                    ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Delete();
+                    CopyTable.Select();
+                }
+                else
+                {
+                    MessageBox.Show("No table selected or too many shapes selected. Select one table.");
+                }
+            }
+        }
+        /*
+         Sub TableTranspose()
+    
+    Set myDocument = Application.ActiveWindow
+    
+    
+    If Not (myDocument.Selection.Type = ppSelectionShapes Or myDocument.Selection.Type = ppSelectionText) Then
+        MsgBox "No table selected."
+    Else
+        
+        If (Application.ActiveWindow.Selection.ShapeRange.Count = 1) And Application.ActiveWindow.Selection.ShapeRange.HasTable Then
+            
+            With Application.ActiveWindow.Selection.ShapeRange.Table
+                
+                Set CopyTable = Application.ActiveWindow.Selection.ShapeRange.Duplicate
+                
+                For RowsCount = .Rows.Count To 2 Step -1
+                    CopyTable.Table.Rows(RowsCount).Delete
+                Next RowsCount
+                
+                For ColsCount = .Columns.Count To 2 Step -1
+                    CopyTable.Table.Columns(ColsCount).Delete
+                Next ColsCount
+                
+                For RowsCount = .Rows.Count To 2 Step -1
+                    CopyTable.Table.Columns.Add
+                Next RowsCount
+                
+                For ColsCount = .Columns.Count To 2 Step -1
+                    CopyTable.Table.Rows.Add
+                Next ColsCount
+                
+                CopyTable.Width = Application.ActiveWindow.Selection.ShapeRange.Width
+                CopyTable.Top = Application.ActiveWindow.Selection.ShapeRange.Top
+                CopyTable.Left = Application.ActiveWindow.Selection.ShapeRange.Left
+                
+                For RowsCount = 1 To .Rows.Count
+                    For ColsCount = 1 To .Columns.Count
+                        
+                        .Cell(RowsCount, ColsCount).Shape.TextFrame2.TextRange.Cut
+                        CopyTable.Table.Cell(ColsCount, RowsCount).Shape.TextFrame2.TextRange.Paste
+                        
+                    Next ColsCount
+                Next RowsCount
+                
+            End With
+            
+            Application.ActiveWindow.Selection.ShapeRange.Delete
+            CopyTable.Select
+            
+        Else
+            
+            MsgBox "No table selected or too many shapes selected. Select one table."
+            
+        End If
+        
+    End If
+    
+End Sub
+
+         */
+        #endregion
+        #region SplitTableByRow
+        public void SplitTableByRow(IRibbonControl control)
+        {
+            var myDocument = ThisAddIn.application.ActiveWindow;
+            if (!(myDocument.Selection.Type == PpSelectionType.ppSelectionShapes || myDocument.Selection.Type == PpSelectionType.ppSelectionText))
+            {
+                MessageBox.Show("No table or cells selected.");
+            }
+            else
+            {
+                if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange[1].HasTable==MsoTriState.msoCTrue || ThisAddIn.application.ActiveWindow.Selection.ShapeRange[1].HasTable == MsoTriState.msoTrue)
+                {
+                    //Application.ActiveWindow.Selection.ShapeRange(1).Table
+                    for (int RowsCount = 1; RowsCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows.Count; RowsCount++)
+                    {
+                        for (int ColsCount = 1; ColsCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns.Count; ColsCount++)
+                        {
+                            if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange[1].Table.Cell(RowsCount, ColsCount).Selected)
+                            {
+                                if (RowsCount != 1)
+                                {
+                                    var ThisTable = ThisAddIn.application.ActiveWindow.Selection.ShapeRange[1];
+                                    var DuplicatedTable = ThisTable.Duplicate();
+                                    DuplicatedTable.Left = ThisTable.Left;
+                                    DuplicatedTable.Top = ThisTable.Top;
+
+                                    DuplicatedTable.Table.FirstRow = false;
+
+                                    for (int DeleteRows = 1; DeleteRows <= RowsCount - 1; DeleteRows++) {
+                                        float DuplicatedHeight = DuplicatedTable.Table.Rows[1].Height;
+                                        DuplicatedTable.Table.Rows[1].Delete();
+                                        DuplicatedTable.Top = DuplicatedTable.Top + DuplicatedHeight;
+
+                                    }
+
+                                    DuplicatedTable.Top = DuplicatedTable.Top + 5;
+
+                                    for (int DeleteRows = ThisAddIn.application.ActiveWindow.Selection.ShapeRange[1].Table.Rows.Count; DeleteRows >= RowsCount; DeleteRows--) {
+                                        ThisTable.Table.Rows[DeleteRows].Delete();
+                                    }
+
+                                    return;
+
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Will not work on the first row.");
+                                }
+                            }
+
+                        }
+                    }
+
+                        }
+                else
+                {
+                    MessageBox.Show("No table or cells selected.");
+                }
+            }
+        }
+
+        /*
+         Sub SplitTableByRow()
+
+    Set myDocument = Application.ActiveWindow
+
+    If Not (myDocument.Selection.Type = ppSelectionShapes Or myDocument.Selection.Type = ppSelectionText) Then
+        MsgBox "No table or cells selected."
+    Else
+
+        If Application.ActiveWindow.Selection.ShapeRange(1).HasTable Then
+
+            With Application.ActiveWindow.Selection.ShapeRange(1).Table
+
+                For RowsCount = 1 To .Rows.Count
+                    For ColsCount = 1 To .Columns.Count
+
+                        If .Cell(RowsCount, ColsCount).Selected Then
+
+                            If Not RowsCount = 1 Then
+
+                                Set ThisTable = Application.ActiveWindow.Selection.ShapeRange(1)
+                                Set DuplicatedTable = ThisTable.Duplicate
+                                DuplicatedTable.Left = ThisTable.Left
+                                DuplicatedTable.Top = ThisTable.Top
+
+                                DuplicatedTable.Table.FirstRow = False
+
+                                For DeleteRows = 1 To RowsCount - 1
+                                    DuplicatedHeight = DuplicatedTable.Table.Rows(1).Height
+                                    DuplicatedTable.Table.Rows(1).Delete
+                                    DuplicatedTable.Top = DuplicatedTable.Top + DuplicatedHeight
+
+                                Next
+
+                                DuplicatedTable.Top = DuplicatedTable.Top + 5
+
+                                For DeleteRows = .Rows.Count To RowsCount Step -1
+                                    ThisTable.Table.Rows(DeleteRows).Delete
+                                Next
+
+                                Exit Sub
+
+                            Else
+
+                                MsgBox "Will not work on the first row."
+
+                            End If
+
+                        End If
+
+                    Next ColsCount
+                Next RowsCount
+
+            End With
+
+        Else
+
+            MsgBox "No table or cells selected."
+
+        End If
+
+    End If
+
+End Sub
+
+         */
+        #endregion
+        #region SplitTableByColumn
+        public void SplitTableByColumn(IRibbonControl control)
+        {
+            var myDocument = ThisAddIn.application.ActiveWindow;
+            if (!(myDocument.Selection.Type == PpSelectionType.ppSelectionShapes || myDocument.Selection.Type == PpSelectionType.ppSelectionText))
+            {
+                MessageBox.Show("No table or cells selected.");
+            }
+            else
+            {
+                if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange[1].HasTable == MsoTriState.msoCTrue || ThisAddIn.application.ActiveWindow.Selection.ShapeRange[1].HasTable == MsoTriState.msoTrue)
+                {
+                    //Application.ActiveWindow.Selection.ShapeRange(1).Table
+                    for (int RowsCount = 1; RowsCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows.Count; RowsCount++)
+                    {
+                        for (int ColsCount = 1; ColsCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns.Count; ColsCount++)
+                        {
+                            if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange[1].Table.Cell(RowsCount, ColsCount).Selected)
+                            {
+                                if (ColsCount != 1)
+                                {
+                                    var ThisTable = ThisAddIn.application.ActiveWindow.Selection.ShapeRange[1];
+                                    var DuplicatedTable = ThisTable.Duplicate();
+                                    DuplicatedTable.Left = ThisTable.Left;
+                                    DuplicatedTable.Top = ThisTable.Top;
+
+
+                                    DuplicatedTable.Table.FirstCol = false;
+
+
+                                    for (int DeleteColumns = 1; DeleteColumns <= ColsCount - 1; DeleteColumns++) 
+                                    {
+                                       float DuplicatedWidth = DuplicatedTable.Table.Columns[1].Width;
+                                        DuplicatedTable.Table.Columns[1].Delete();
+                                        DuplicatedTable.Left = DuplicatedTable.Left + DuplicatedWidth;
+    
+                                    }
+
+
+                                    DuplicatedTable.Left = DuplicatedTable.Left + 5;
+
+
+                                    for (int DeleteColumns = ThisAddIn.application.ActiveWindow.Selection.ShapeRange[1].Table.Columns.Count; DeleteColumns >= ColsCount; DeleteColumns--) 
+                                    {
+                                        ThisTable.Table.Columns[DeleteColumns].Delete();
+                                    }
+
+                                    return;
+
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Will not work on the first column.");
+                                }
+                            }
+
+                        }
+                    }
+
+                }
+                else
+                {
+                    MessageBox.Show("No table or cells selected.");
+                }
+            }
+        }
+
+        /*
+         Sub SplitTableByColumn()
+    
+    Set myDocument = Application.ActiveWindow
+    
+    If Not (myDocument.Selection.Type = ppSelectionShapes Or myDocument.Selection.Type = ppSelectionText) Then
+        MsgBox "No table or cells selected."
+    Else
+        
+        If Application.ActiveWindow.Selection.ShapeRange(1).HasTable Then
+            
+            With Application.ActiveWindow.Selection.ShapeRange(1).Table
+                
+                For RowsCount = 1 To .Rows.Count
+                    For ColsCount = 1 To .Columns.Count
+                        
+                        If .Cell(RowsCount, ColsCount).Selected Then
+                            
+                            If Not ColsCount = 1 Then
+                                
+                                Set ThisTable = Application.ActiveWindow.Selection.ShapeRange(1)
+                                Set DuplicatedTable = ThisTable.Duplicate
+                                DuplicatedTable.Left = ThisTable.Left
+                                DuplicatedTable.Top = ThisTable.Top
+                                
+                                DuplicatedTable.Table.FirstCol = False
+                                
+                                For DeleteColumns = 1 To ColsCount - 1
+                                    DuplicatedWidth = DuplicatedTable.Table.Columns(1).Width
+                                    DuplicatedTable.Table.Columns(1).Delete
+                                    DuplicatedTable.Left = DuplicatedTable.Left + DuplicatedWidth
+                                    
+                                Next
+                                
+                                DuplicatedTable.Left = DuplicatedTable.Left + 5
+                                
+                                For DeleteColumns = .Columns.Count To ColsCount Step -1
+                                    ThisTable.Table.Columns(DeleteColumns).Delete
+                                Next
+                                
+                                Exit Sub
+                                
+                            Else
+                                
+                                MsgBox "Will not work on the first column."
+                                
+                            End If
+                            
+                        End If
+                        
+                    Next ColsCount
+                Next RowsCount
+                
+            End With
+            
+        Else
+            
+            MsgBox "No table or cells selected."
+            
+        End If
+        
+    End If
+    
+End Sub
+
+         */
+        #endregion
+        #region TableSum
+        public void TableSum(IRibbonControl control)
+        {
+            var myDocument = ThisAddIn.application.ActiveWindow;
+            double TotalSum = 0;
+            if (!(myDocument.Selection.Type == PpSelectionType.ppSelectionShapes || myDocument.Selection.Type == PpSelectionType.ppSelectionText))
+            {
+                MessageBox.Show("No table or cells selected.");
+            }
+            else
+            {
+               if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable==MsoTriState.msoCTrue || ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoTrue)
+                {
+                    //With Application.ActiveWindow.Selection.ShapeRange.Table
+
+                    var TypeOfGaps = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA COLUMNGAPS"];
+                    for (int RowsCount = 1; RowsCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows.Count; RowsCount++)
+                    {
+                        for (int ColsCount = 1; ColsCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns.Count; ColsCount++)
+                        {
+                            if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Selected)
+                            {
+                                if (!((ColsCount % 2 == 0 && TypeOfGaps == "even") ||( ColsCount % 2 != 0 && TypeOfGaps == "odd")))
+                                {
+                                    for(int SumCount=1; SumCount<= RowsCount-1; SumCount++)
+                                    {
+                                        try
+                                        {
+                                            TotalSum = TotalSum + double.Parse(ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(SumCount, ColsCount).Shape.TextFrame.TextRange.Text);
+                                        }
+                                        catch(Exception ex)
+                                        {
+
+                                        }
+                                    }
+                                   ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Shape.TextFrame.TextRange.Text = TotalSum.ToString();
+                                  
+                                }
+                                TotalSum = 0;
+                            }
+                        }
+                    }
+
+                }
+                else
+                {
+                    MessageBox.Show("No table or cells selected.");
+                }
+            }
+        }
+        /*
+         Sub TableSum()
+
+    Set myDocument = Application.ActiveWindow
+    Dim TotalSum As Double
+    TotalSum = 0
+    
+       
+    If Not (myDocument.Selection.Type = ppSelectionShapes Or myDocument.Selection.Type = ppSelectionText) Then
+    MsgBox "No table or cells selected."
+    Else
+    
+        
+    If Application.ActiveWindow.Selection.ShapeRange.HasTable Then
+        
+    With Application.ActiveWindow.Selection.ShapeRange.Table
+        
+        TypeOfGaps = Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA COLUMNGAPS")
+        
+        For RowsCount = 1 To .Rows.Count
+            For ColsCount = 1 To .Columns.Count
+                
+                If .Cell(RowsCount, ColsCount).Selected Then
+                    
+                If Not ((ColsCount Mod 2 = 0 And TypeOfGaps = "even") Or (Not ColsCount Mod 2 = 0 And TypeOfGaps = "odd")) Then
+                
+                    For SumCount = 1 To RowsCount - 1
+                    
+                    On Error Resume Next
+                    TotalSum = TotalSum + CDbl(.Cell(SumCount, ColsCount).Shape.TextFrame.TextRange.Text)
+                    On Error GoTo 0
+                    
+                    Next SumCount
+                        
+                    .Cell(RowsCount, ColsCount).Shape.TextFrame.TextRange.Text = TotalSum
+                    
+                    End If
+                    
+                    TotalSum = 0
+                
+                End If
+                
+            Next ColsCount
+        Next RowsCount
+        
+    End With
+    
+    Else
+    
+    MsgBox "No table or cells selected."
+    
+    End If
+    
+    End If
+
+End Sub
+
+         */
+        #endregion
+
+        #region TableRowSum
+        public void TableRowSum(IRibbonControl control)
+        {
+            var myDocument = ThisAddIn.application.ActiveWindow;
+            double TotalSum = 0;
+            if (!(myDocument.Selection.Type == PpSelectionType.ppSelectionShapes || myDocument.Selection.Type == PpSelectionType.ppSelectionText))
+            {
+                MessageBox.Show("No table or cells selected.");
+            }
+            else
+            {
+                if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoCTrue || ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoTrue)
+                {
+                    //With Application.ActiveWindow.Selection.ShapeRange.Table
+
+                    var TypeOfGaps = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA COLUMNGAPS"];
+                    for (int RowsCount = 1; RowsCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows.Count; RowsCount++)
+                    {
+                        for (int ColsCount = 1; ColsCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns.Count; ColsCount++)
+                        {
+                           
+                            if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Selected)
+                            {
+                                if (!((RowsCount % 2 == 0 && TypeOfGaps == "even") || (RowsCount % 2 != 0 && TypeOfGaps == "odd")))
+                                {
+                                    for (int SumCount = 1; SumCount <= ColsCount - 1; SumCount++)
+                                    {
+                                        try
+                                        {
+                                            TotalSum = TotalSum + double.Parse(ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowsCount,SumCount).Shape.TextFrame.TextRange.Text);
+                                        }
+                                        catch (Exception ex)
+                                        {
+
+                                        }
+                                    }
+                                    ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Shape.TextFrame.TextRange.Text = TotalSum.ToString();
+                                }
+                                TotalSum = 0;
+                            }
+                        }
+                    }
+
+                }
+                else
+                {
+                    MessageBox.Show("No table or cells selected.");
+                }
+            }
+        }
+
+        /*
+         Sub TableRowSum()
+
+    Set myDocument = Application.ActiveWindow
+    Dim TotalSum As Double
+    TotalSum = 0
+    
+    If Not (myDocument.Selection.Type = ppSelectionShapes Or myDocument.Selection.Type = ppSelectionText) Then
+    MsgBox "No table or cells selected."
+    Else
+    
+    
+    If Application.ActiveWindow.Selection.ShapeRange.HasTable Then
+        
+    TypeOfGaps = Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA ROWGAPS")
+        
+    With Application.ActiveWindow.Selection.ShapeRange.Table
+        
+        For RowsCount = 1 To .Rows.Count
+            For ColsCount = 1 To .Columns.Count
+                
+                If .Cell(RowsCount, ColsCount).Selected Then
+                
+                If Not ((RowsCount Mod 2 = 0 And TypeOfGaps = "even") Or (Not RowsCount Mod 2 = 0 And TypeOfGaps = "odd")) Then
+                
+                    For SumCount = 1 To ColsCount - 1
+                    
+                    On Error Resume Next
+                    TotalSum = TotalSum + CDbl(.Cell(RowsCount, SumCount).Shape.TextFrame.TextRange.Text)
+                    On Error GoTo 0
+                    
+                    Next SumCount
+                        
+                    .Cell(RowsCount, ColsCount).Shape.TextFrame.TextRange.Text = TotalSum
+                    
+                    End If
+                    
+                    TotalSum = 0
+                
+                End If
+                
+            Next ColsCount
+        Next RowsCount
+        
+    End With
+    
+    Else
+    
+    MsgBox "No table or cells selected."
+    
+    End If
+    
+    End If
+
+End Sub
+
+         */
+        #endregion
+
+        #region TableColumnGaps
+        public void TableColumnGapsEven(IRibbonControl control)
+        {
+            TableColumnGaps("even", 5);
+        }
+        public void TableColumnGapsOdd(IRibbonControl control)
+        {
+            TableColumnGaps ("odd", 5);
+        }
+        #endregion
+
+        #region TableColumnRemoveGaps
+        public void TableColumnRemoveGaps(IRibbonControl control)
+        {
+            var myDocument = ThisAddIn.application.ActiveWindow;
+            if (!(myDocument.Selection.Type == PpSelectionType.ppSelectionShapes || myDocument.Selection.Type == PpSelectionType.ppSelectionText))
+            {
+                MessageBox.Show("No table  selected.");
+            }
+            else
+            {
+                if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Count == 1 && (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoCTrue || ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoTrue))
+                {
+
+                    if (!(ThisAddIn.application.ActiveWindow .Selection.ShapeRange.Tags["INSTRUMENTA COLUMNGAPS"] == "odd" || ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA COLUMNGAPS"] == "even"))
+                    {
+                        if (MessageBox.Show("No column gaps found, are you sure you want to continue?","",MessageBoxButtons.YesNo,MessageBoxIcon.Question) == DialogResult.No)
+                        {
+                            return;
+                        }
+                    }
+                    var TypeOfGaps = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA COLUMNGAPS"];
+
+                    ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags.Delete("INSTRUMENTA COLUMNGAPS");
+                    //ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table
+
+                    for(int ColumnCount= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns.Count; ColumnCount >= 1; ColumnCount--)
+                    {
+                        if ((ColumnCount % 2 == 0 && TypeOfGaps == "even") || (ColumnCount % 2 != 0 && TypeOfGaps == "odd"))
+                            ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns[ColumnCount].Delete();
+                        
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("No table selected or too many shapes selected. Select one table.");
+                }
+
+             }
+        }
+        /*
+         Sub TableColumnRemoveGaps()
+
+    Set myDocument = Application.ActiveWindow
+
+    If Not (myDocument.Selection.Type = ppSelectionShapes Or myDocument.Selection.Type = ppSelectionText) Then
+        MsgBox "No table selected."
+    Else
+
+        If (Application.ActiveWindow.Selection.ShapeRange.Count = 1) And Application.ActiveWindow.Selection.ShapeRange.HasTable Then
+
+            If Not (Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA COLUMNGAPS") = "odd" Or Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA COLUMNGAPS") = "even") Then
+
+                If MsgBox("No column gaps found, are you sure you want to continue?", vbYesNo) = vbNo Then
+                    Exit Sub
+                End If
+            End If
+
+            TypeOfGaps = Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA COLUMNGAPS")
+
+            Application.ActiveWindow.Selection.ShapeRange.Tags.Delete "INSTRUMENTA COLUMNGAPS"
+
+            With Application.ActiveWindow.Selection.ShapeRange.Table
+
+                For ColumnCount = .Columns.Count To 1 Step -1
+
+                    If (ColumnCount Mod 2 = 0 And TypeOfGaps = "even") Or (Not ColumnCount Mod 2 = 0 And TypeOfGaps = "odd") Then
+                        .Columns(ColumnCount).Delete
+                    End If
+
+                Next ColumnCount
+
+            End With
+
+        Else
+
+            MsgBox "No table selected or too many shapes selected. Select one table."
+
+        End If
+
+    End If
+
+End Sub
+
+         */
+        #endregion
+
+        #region TableColumnIncreaseGaps
+        public void TableColumnIncreaseGaps(IRibbonControl control)
+        {
+            var myDocument = ThisAddIn.application.ActiveWindow;
+            if (!(myDocument.Selection.Type == PpSelectionType.ppSelectionShapes || myDocument.Selection.Type == PpSelectionType.ppSelectionText))
+            {
+                MessageBox.Show("No table  selected.");
+            }
+            else
+            {
+                if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Count == 1 && (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoCTrue || ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoTrue))
+                {
+
+                    if (!(ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA COLUMNGAPS"] == "odd" || ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA COLUMNGAPS"] == "even"))
+                    {
+                        if (MessageBox.Show("No column gaps found, are you sure you want to continue?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                        {
+                            return;
+                        }
+                    }
+               
+
+                    var TypeOfGaps = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA COLUMNGAPS"];
+
+                    
+                    //ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table
+
+                    for (int ColumnCount = 1; ColumnCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns.Count; ColumnCount++)
+                    {
+                        if ((ColumnCount % 2 == 0 && TypeOfGaps == "even") || (ColumnCount % 2 != 0 && TypeOfGaps == "odd"))
+                            ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns[ColumnCount].Width = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns[ColumnCount].Width + 1;
+
+                    }
+
+                }
+                else
+                {
+                    MessageBox.Show("No table selected or too many shapes selected. Select one table.");
+                }
+
+            }
+        }
+
+        /*
+         Sub TableColumnIncreaseGaps()
+    
+    Set myDocument = Application.ActiveWindow
+    
+    If Not (myDocument.Selection.Type = ppSelectionShapes Or myDocument.Selection.Type = ppSelectionText) Then
+        MsgBox "No table selected."
+    Else
+        
+        If (Application.ActiveWindow.Selection.ShapeRange.Count = 1) And Application.ActiveWindow.Selection.ShapeRange.HasTable Then
+            
+            If Not (Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA COLUMNGAPS") = "odd" Or Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA COLUMNGAPS") = "even") Then
+                
+                If MsgBox("No column gaps found, are you sure you want to continue?", vbYesNo) = vbNo Then
+                    Exit Sub
+                End If
+            End If
+            TypeOfGaps = Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA COLUMNGAPS")
+            
+            With Application.ActiveWindow.Selection.ShapeRange.Table
+                
+                For ColumnCount = 1 To .Columns.Count
+                    
+                    If (ColumnCount Mod 2 = 0 And TypeOfGaps = "even") Or (Not ColumnCount Mod 2 = 0 And TypeOfGaps = "odd") Then
+                        .Columns(ColumnCount).Width = .Columns(ColumnCount).Width + 1
+                    End If
+                    
+                Next ColumnCount
+                
+            End With
+            
+        Else
+            
+            MsgBox "No table selected or too many shapes selected. Select one table."
+            
+        End If
+        
+    End If
+    
+End Sub
+
+         */
+        #endregion
+        #region TableColumnDecreaseGaps
+        public void TableColumnDecreaseGaps(IRibbonControl control)
+        {
+            var myDocument = ThisAddIn.application.ActiveWindow;
+            if (!(myDocument.Selection.Type == PpSelectionType.ppSelectionShapes || myDocument.Selection.Type == PpSelectionType.ppSelectionText))
+            {
+                MessageBox.Show("No table  selected.");
+            }
+            else
+            {
+                if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Count == 1 && (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoCTrue || ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoTrue))
+                {
+
+                    if (!(ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA COLUMNGAPS"] == "odd" || ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA COLUMNGAPS"] == "even"))
+                    {
+                        if (MessageBox.Show("No column gaps found, are you sure you want to continue?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                        {
+                            return;
+                        }
+                    }
+
+
+                    var TypeOfGaps = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA COLUMNGAPS"];
+
+
+                    //ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table
+
+                    for (int ColumnCount = 1; ColumnCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns.Count; ColumnCount++)
+                    {
+                        if ((ColumnCount % 2 == 0 && TypeOfGaps == "even") || (ColumnCount % 2 != 0 && TypeOfGaps == "odd"))
+                        {
+                            if(ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns[ColumnCount].Width - 1 >= 0)
+                              ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns[ColumnCount].Width = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns[ColumnCount].Width - 1;
+                        }
+                    }
+
+                }
+                else
+                {
+                    MessageBox.Show("No table selected or too many shapes selected. Select one table.");
+                }
+
+            }
+        }
+
+        /*
+         Sub TableColumnDecreaseGaps()
+    
+    Set myDocument = Application.ActiveWindow
+    
+    If Not (myDocument.Selection.Type = ppSelectionShapes Or myDocument.Selection.Type = ppSelectionText) Then
+        MsgBox "No table selected."
+    Else
+        
+        If (Application.ActiveWindow.Selection.ShapeRange.Count = 1) And Application.ActiveWindow.Selection.ShapeRange.HasTable Then
+            
+            If Not (Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA COLUMNGAPS") = "odd" Or Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA COLUMNGAPS") = "even") Then
+                
+                If MsgBox("No column gaps found, are you sure you want to continue?", vbYesNo) = vbNo Then
+                    Exit Sub
+                End If
+            End If
+            TypeOfGaps = Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA COLUMNGAPS")
+            
+            With Application.ActiveWindow.Selection.ShapeRange.Table
+                
+                For ColumnCount = 1 To .Columns.Count
+                    
+                    If ((ColumnCount Mod 2 = 0 And TypeOfGaps = "even") Or (Not ColumnCount Mod 2 = 0 And TypeOfGaps = "odd") And ((.Columns(ColumnCount).Width - 1) >= 0)) Then
+                        .Columns(ColumnCount).Width = .Columns(ColumnCount).Width - 1
+                    End If
+                    
+                Next ColumnCount
+                
+            End With
+            
+        Else
+            
+            MsgBox "No table selected or too many shapes selected. Select one table."
+            
+        End If
+        
+    End If
+    
+End Sub
+
+         */
+        #endregion
+        #region TableRowGaps
+        public void TableRowGapsEven(IRibbonControl control)
+        {
+            TableRowGaps ("even", 5);
+        }
+        public void TableRowGapsOdd(IRibbonControl control)
+        {
+            TableRowGaps( "odd", 5);
+        }
+        #endregion
+
+        #region TableRowRemoveGaps
+
+        public void TableRowRemoveGaps(IRibbonControl control)
+        {
+            var myDocument = ThisAddIn.application.ActiveWindow;
+            if (!(myDocument.Selection.Type == PpSelectionType.ppSelectionShapes || myDocument.Selection.Type == PpSelectionType.ppSelectionText))
+            {
+                MessageBox.Show("No table  selected.");
+            }
+            else
+            {
+                if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Count == 1 && (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoCTrue || ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoTrue))
+                {
+
+                    if (!(ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA ROWGAPS"] == "odd" || ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA ROWGAPS"] == "even"))
+                    {
+                        if (MessageBox.Show("No row gaps found, are you sure you want to continue?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                        {
+                            return;
+                        }
+                    }
+  
+                    var TypeOfGaps = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA ROWGAPS"];
+
+                    ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags.Delete("INSTRUMENTA ROWGAPS");
+
+                    //ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table
+
+                    for (int RowCount = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows.Count; RowCount >= 1; RowCount--)
+                    {
+                        if ((RowCount % 2 == 0 && TypeOfGaps == "even") || (RowCount % 2 != 0 && TypeOfGaps == "odd"))
+                            ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows[RowCount].Delete();
+
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("No table selected or too many shapes selected. Select one table.");
+                }
+
+            }
+        }
+
+        /*
+         Sub TableRowRemoveGaps()
+    
+    Set myDocument = Application.ActiveWindow
+    
+    If Not (myDocument.Selection.Type = ppSelectionShapes Or myDocument.Selection.Type = ppSelectionText) Then
+        MsgBox "No table selected."
+    Else
+        
+        If (Application.ActiveWindow.Selection.ShapeRange.Count = 1) And Application.ActiveWindow.Selection.ShapeRange.HasTable Then
+            
+            If Not (Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA ROWGAPS") = "odd" Or Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA ROWGAPS") = "even") Then
+                
+                If MsgBox("No row gaps found, are you sure you want to continue?", vbYesNo) = vbNo Then
+                    Exit Sub
+                End If
+            End If
+            
+            TypeOfGaps = Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA ROWGAPS")
+            
+            Application.ActiveWindow.Selection.ShapeRange.Tags.Delete "INSTRUMENTA ROWGAPS"
+            
+            With Application.ActiveWindow.Selection.ShapeRange.Table
+                
+                For RowCount = .Rows.Count To 1 Step -1
+                    
+                    If (RowCount Mod 2 = 0 And TypeOfGaps = "even") Or (Not RowCount Mod 2 = 0 And TypeOfGaps = "odd") Then
+                        .Rows(RowCount).Delete
+                    End If
+                    
+                Next RowCount
+                
+            End With
+            
+        Else
+            
+            MsgBox "No table selected or too many shapes selected. Select one table."
+            
+        End If
+        
+    End If
+    
+End Sub
+
+         */
+
+        #endregion
+
+        #region TableRowIncreaseGaps
+        public void TableRowIncreaseGaps(IRibbonControl control)
+        {
+            var myDocument = ThisAddIn.application.ActiveWindow;
+            if (!(myDocument.Selection.Type == PpSelectionType.ppSelectionShapes || myDocument.Selection.Type == PpSelectionType.ppSelectionText))
+            {
+                MessageBox.Show("No table  selected.");
+            }
+            else
+            {
+                if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Count == 1 && (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoCTrue || ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoTrue))
+                {
+                   
+                    if (!(ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA ROWGAPS"] == "odd" || ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA ROWGAPS"] == "even"))
+                    {
+                        if (MessageBox.Show("No row gaps found, are you sure you want to continue?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                        {
+                            return;
+                        }
+                    }
+
+
+                    var TypeOfGaps = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA ROWGAPS"];
+
+
+                    //ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table
+
+                    for (int RowCount = 1; RowCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows.Count; RowCount++)
+                    {
+                        if ((RowCount % 2 == 0 && TypeOfGaps == "even") || (RowCount % 2 != 0 && TypeOfGaps == "odd"))
+                            ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows[RowCount].Height = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows [RowCount].Height + 1;
+
+                    }
+                 
+                }
+                else
+                {
+                    MessageBox.Show("No table selected or too many shapes selected. Select one table.");
+                }
+
+            }
+        }
+
+        /*
+         
+         Sub TableRowIncreaseGaps()
+    
+    Set myDocument = Application.ActiveWindow
+    
+    If Not (myDocument.Selection.Type = ppSelectionShapes Or myDocument.Selection.Type = ppSelectionText) Then
+        MsgBox "No table selected."
+    Else
+        
+        If (Application.ActiveWindow.Selection.ShapeRange.Count = 1) And Application.ActiveWindow.Selection.ShapeRange.HasTable Then
+            
+            If Not (Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA ROWGAPS") = "odd" Or Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA ROWGAPS") = "even") Then
+                
+                If MsgBox("No row gaps found, are you sure you want to continue?", vbYesNo) = vbNo Then
+                    Exit Sub
+                End If
+            End If
+            TypeOfGaps = Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA ROWGAPS")
+            
+            With Application.ActiveWindow.Selection.ShapeRange.Table
+                
+                For RowCount = 1 To .Rows.Count
+                    
+                    If (RowCount Mod 2 = 0 And TypeOfGaps = "even") Or (Not RowCount Mod 2 = 0 And TypeOfGaps = "odd") Then
+                        .Rows(RowCount).Height = .Rows(RowCount).Height + 1
+                    End If
+                    
+                Next RowCount
+                
+            End With
+            
+        Else
+            
+            MsgBox "No table selected or too many shapes selected. Select one table."
+            
+        End If
+        
+    End If
+    
+End Sub
+
+         */
+        #endregion
+
+        #region TableRowDecreaseGaps
+        public void TableRowDecreaseGaps(IRibbonControl control)
+        {
+            var myDocument = ThisAddIn.application.ActiveWindow;
+            if (!(myDocument.Selection.Type == PpSelectionType.ppSelectionShapes || myDocument.Selection.Type == PpSelectionType.ppSelectionText))
+            {
+                MessageBox.Show("No table  selected.");
+            }
+            else
+            {
+                if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Count == 1 && (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoCTrue || ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoTrue))
+                {
+
+                    if (!(ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA ROWGAPS"] == "odd" || ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA ROWGAPS"] == "even"))
+                    {
+                        if (MessageBox.Show("No row gaps found, are you sure you want to continue?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                        {
+                            return;
+                        }
+                    }
+
+
+                    var TypeOfGaps = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA ROWGAPS"];
+
+
+                    //ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table
+
+                    for (int RowCount = 1; RowCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows.Count; RowCount++)
+                    {
+                        if ((RowCount % 2 == 0 && TypeOfGaps == "even") || (RowCount % 2 != 0 && TypeOfGaps == "odd"))
+                        {
+                            if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows[RowCount].Height - 1 >= 0)
+                             ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows[RowCount].Height = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows[RowCount].Height - 1;
+                        }
+
+                    }
+
+                }
+                else
+                {
+                    MessageBox.Show("No table selected or too many shapes selected. Select one table.");
+                }
+
+            }
+        }
+        /*
+         
+Sub TableRowDecreaseGaps()
+    
+    Set myDocument = Application.ActiveWindow
+    
+    If Not (myDocument.Selection.Type = ppSelectionShapes Or myDocument.Selection.Type = ppSelectionText) Then
+        MsgBox "No table selected."
+    Else
+        
+        If (Application.ActiveWindow.Selection.ShapeRange.Count = 1) And Application.ActiveWindow.Selection.ShapeRange.HasTable Then
+            
+            If Not (Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA ROWGAPS") = "odd" Or Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA ROWGAPS") = "even") Then
+                
+                If MsgBox("No row gaps found, are you sure you want to continue?", vbYesNo) = vbNo Then
+                    Exit Sub
+                End If
+            End If
+            TypeOfGaps = Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA ROWGAPS")
+            
+            With Application.ActiveWindow.Selection.ShapeRange.Table
+                
+                For RowCount = 1 To .Rows.Count
+                    
+                    If ((RowCount Mod 2 = 0 And TypeOfGaps = "even") Or (Not RowCount Mod 2 = 0 And TypeOfGaps = "odd") And ((.Rows(RowCount).Height - 1) >= 0)) Then
+                        .Rows(RowCount).Height = .Rows(RowCount).Height - 1
+                    End If
+                    
+                Next RowCount
+                
+            End With
+            
+        Else
+            
+            MsgBox "No table selected or too many shapes selected. Select one table."
+            
+        End If
+        
+    End If
+    
+End Sub
+         */
+        #endregion
+
+        #region TablesMarginsToZero
+        public void TablesMarginsToZero(IRibbonControl control)
+        {
+            var myDocument = ThisAddIn.application.ActiveWindow;
+            if (!(myDocument.Selection.Type == PpSelectionType.ppSelectionShapes || myDocument.Selection.Type == PpSelectionType.ppSelectionText))
+            {
+                MessageBox.Show("No table or cells selected.");
+            }
+            else
+            {
+                if ( (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoCTrue || ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoTrue))
+                {
+                    //ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table
+                    for(int RowsCount=1;RowsCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows.Count; RowsCount++)
+                    {
+                        for (int ColsCount = 1; ColsCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns.Count; ColsCount++)
+                        {
+                            if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Selected)
+                            {
+                                var tf = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Shape.TextFrame;
+                                tf.MarginBottom = 0;
+                                tf.MarginLeft = 0     ;
+                                tf.MarginRight = 0    ;
+                                tf.MarginTop = 0      ;
+
+                            }
+                        }
+                    }
+                    /*
+                       With Application.ActiveWindow.Selection.ShapeRange.Table
+
+                        For RowsCount = 1 To .Rows.Count
+                            For ColsCount = 1 To .Columns.Count
+
+                                If .Cell(RowsCount, ColsCount).Selected Then
+
+                                    With .Cell(RowsCount, ColsCount).Shape.TextFrame
+
+                                        .MarginBottom = 0
+                                        .MarginLeft = 0
+                                        .MarginRight = 0
+                                        .MarginTop = 0
+
+                                    End With
+
+                                End If
+
+                            Next ColsCount
+                        Next RowsCount
+
+                    End With
+                     */
+                }
+                else
+                {
+                    MessageBox.Show("No table or cells selected.");
+                }
+            }
+        }
+        /*
+         Sub TablesMarginsToZero()
+
+    Set myDocument = Application.ActiveWindow
+
+    If Not (myDocument.Selection.Type = ppSelectionShapes Or myDocument.Selection.Type = ppSelectionText) Then
+        MsgBox "No table or cells selected."
+    Else
+
+    If Application.ActiveWindow.Selection.ShapeRange.HasTable Then
+
+    With Application.ActiveWindow.Selection.ShapeRange.Table
+
+        For RowsCount = 1 To .Rows.Count
+            For ColsCount = 1 To .Columns.Count
+
+                If .Cell(RowsCount, ColsCount).Selected Then
+
+                    With .Cell(RowsCount, ColsCount).Shape.TextFrame
+
+                        .MarginBottom = 0
+                        .MarginLeft = 0
+                        .MarginRight = 0
+                        .MarginTop = 0
+
+                    End With
+
+                End If
+
+            Next ColsCount
+        Next RowsCount
+
+    End With
+
+    Else
+
+    MsgBox "No table or cells selected."
+
+    End If
+
+    End If
+
+End Sub
+
+         */
+        #endregion
+
+        #region TablesMarginsIncrease
+        public void TablesMarginsIncrease(IRibbonControl control)
+        {
+            var myDocument = ThisAddIn.application.ActiveWindow;
+            if (!(myDocument.Selection.Type == PpSelectionType.ppSelectionShapes || myDocument.Selection.Type == PpSelectionType.ppSelectionText))
+            {
+                MessageBox.Show("No table or cells selected.");
+            }
+            else
+            {
+                if ((ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoCTrue || ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoTrue))
+                {
+                    //ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table
+                    for (int RowsCount = 1; RowsCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows.Count; RowsCount++)
+                    {
+                        for (int ColsCount = 1; ColsCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns.Count; ColsCount++)
+                        {
+                            if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Selected)
+                            {
+                                var tf = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Shape.TextFrame;
+                                tf.MarginBottom +=(float) 0.2;
+                                tf.MarginLeft += (float)0.2;
+                                tf.MarginRight +=(float) 0.2;
+                                tf.MarginTop   +=(float) 0.2;
+
+                            }
+                        }
+                    }
+                    /*
+                       
+                        .MarginBottom = .MarginBottom + 0.2
+                        .MarginLeft = .MarginLeft + 0.2
+                        .MarginRight = .MarginRight + 0.2
+                        .MarginTop = .MarginTop + 0.2
+                     */
+                }
+                else
+                {
+                    MessageBox.Show("No table or cells selected.");
+                }
+            }
+        }
+        /*
+         Sub TablesMarginsIncrease()
+    
+    Set myDocument = Application.ActiveWindow
+    
+    If Not (myDocument.Selection.Type = ppSelectionShapes Or myDocument.Selection.Type = ppSelectionText) Then
+        MsgBox "No table or cells selected."
+    Else
+    
+    If Application.ActiveWindow.Selection.ShapeRange.HasTable Then
+    
+    With Application.ActiveWindow.Selection.ShapeRange.Table
+        
+        For RowsCount = 1 To .Rows.Count
+            For ColsCount = 1 To .Columns.Count
+                
+                If .Cell(RowsCount, ColsCount).Selected Then
+                    
+                    With .Cell(RowsCount, ColsCount).Shape.TextFrame
+                        
+                        .MarginBottom = .MarginBottom + 0.2
+                        .MarginLeft = .MarginLeft + 0.2
+                        .MarginRight = .MarginRight + 0.2
+                        .MarginTop = .MarginTop + 0.2
+                        
+                    End With
+                    
+                End If
+                
+            Next ColsCount
+        Next RowsCount
+        
+    End With
+    
+    Else
+    
+    MsgBox "No table or cells selected."
+    
+    End If
+    
+    End If
+    
+End Sub
+
+         */
+        #endregion
+
+        #region TablesMarginsDecrease
+        public void TablesMarginsDecrease(IRibbonControl control)
+        {
+            var myDocument = ThisAddIn.application.ActiveWindow;
+            if (!(myDocument.Selection.Type == PpSelectionType.ppSelectionShapes || myDocument.Selection.Type == PpSelectionType.ppSelectionText))
+            {
+                MessageBox.Show("No table or cells selected.");
+            }
+            else
+            {
+                if ((ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoCTrue || ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoTrue))
+                {
+                    //ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table
+                    for (int RowsCount = 1; RowsCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Rows.Count; RowsCount++)
+                    {
+                        for (int ColsCount = 1; ColsCount <= ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Columns.Count; ColsCount++)
+                        {
+                            if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Selected)
+                            {
+                                var tf = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table.Cell(RowsCount, ColsCount).Shape.TextFrame;
+                               
+                                if(tf.MarginBottom>=0.2)
+                                  tf.MarginBottom -= (float)0.2;
+                                if (tf.MarginLeft >= 0.2)
+                                    tf.MarginLeft -= (float)0.2;
+                                if (tf.MarginRight >= 0.2)
+                                    tf.MarginRight -= (float)0.2;
+                                if (tf.MarginTop >= 0.2)
+                                    tf.MarginTop -= (float)0.2;
+
+                            }
+                        }
+                    }
+                    /*
+                       
+                           If .Cell(RowsCount, ColsCount).Selected Then
+                    
+                    With .Cell(RowsCount, ColsCount).Shape.TextFrame
+                        
+                        If .MarginBottom >= 0.2 Then
+                            .MarginBottom = .MarginBottom - 0.2
+                        End If
+                        If .MarginLeft >= 0.2 Then
+                            .MarginLeft = .MarginLeft - 0.2
+                        End If
+                        If .MarginRight >= 0.2 Then
+                            .MarginRight = .MarginRight - 0.2
+                        End If
+                        If .MarginTop >= 0.2 Then
+                            .MarginTop = .MarginTop - 0.2
+                        End If
+                        
+                    End With
+                    
+                End If
+                     */
+                }
+                else
+                {
+                    MessageBox.Show("No table or cells selected.");
+                }
+            }
+        }
+        #endregion
         #region Misc
-        void ConnectRectangleShapes(string ShapeDirection)
+        void TableColumnGaps(string TypeOfGaps, double GapSize)
+        {
+            var myDocument = ThisAddIn.application.ActiveWindow;
+            if (!(myDocument.Selection.Type == PpSelectionType.ppSelectionShapes || myDocument.Selection.Type == PpSelectionType.ppSelectionText))
+            {
+                MessageBox.Show("No table  selected.");
+            }
+            else
+            {
+                if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Count == 1 && (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoCTrue || ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoTrue))
+                {
+
+                    if (!(ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA COLUMNGAPS"] == "odd" || ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA COLUMNGAPS"] == "even"))
+                    {
+                        if (MessageBox.Show("Existing column gaps found in table, do you want to remove those first?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                        {
+                            TableColumnRemoveGaps(null);
+                        }
+                    }
+                    ////////////
+                    if (TypeOfGaps == "odd")
+                        ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags.Add("INSTRUMENTA COLUMNGAPS", "odd");
+                    else
+                        ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags.Add("INSTRUMENTA COLUMNGAPS", "even");
+                    //////
+                    var tbl = ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table;
+                    var NumberOfColumns = tbl.Columns.Count;
+                    List<double> ColumnWidthArray = new List<double>();
+                    var NumberOfNewColumns = 0;
+                    if (TypeOfGaps == "odd")
+                    {
+                        NumberOfNewColumns = NumberOfColumns + NumberOfColumns  + 1;
+                        ColumnWidthArray.Clear();
+                        for (int ColumnCount = 1; ColumnCount <= NumberOfColumns; ColumnCount++)
+                        {
+                            ColumnWidthArray.Add(GapSize);
+                            ColumnWidthArray.Add(tbl.Columns[ColumnCount].Width );
+                            if (ColumnCount == NumberOfColumns )
+                            {
+                                ColumnWidthArray.Add(GapSize);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        NumberOfNewColumns = NumberOfColumns + NumberOfColumns - 1;
+                        for (int ColumnCount = 1; ColumnCount <= NumberOfColumns; ColumnCount++)
+                        {
+                            if (ColumnCount != 1)
+                            {
+
+                                ColumnWidthArray.Add(GapSize);
+                                ColumnWidthArray.Add(tbl.Columns[ColumnCount].Width);
+
+                            }
+                            else
+                            {
+                                ColumnWidthArray.Clear();
+                                ColumnWidthArray.Add(tbl.Columns[ColumnCount].Width);
+                            }
+                        }
+
+                    }
+                    ///////////
+                    for (int ColumnCount = NumberOfColumns; ColumnCount >= 1; ColumnCount--)
+                    {
+
+                        if (TypeOfGaps == "odd")
+                        {
+
+                            var AddedColumn = tbl.Columns.Add(ColumnCount);
+
+                            for (int CellCount = 1; CellCount <= AddedColumn.Cells.Count; CellCount++)
+                            {
+                                AddedColumn.Cells[CellCount].Shape.Fill.Visible = MsoTriState.msoFalse;
+                                AddedColumn.Cells[CellCount].Borders[PpBorderType.ppBorderTop].Weight = 0;
+                                AddedColumn.Cells[CellCount].Borders[PpBorderType.ppBorderBottom ].Weight = 0;
+                                AddedColumn.Cells[CellCount].Shape.TextFrame.TextRange.Font.Size = 1;
+
+                                AddedColumn.Cells[CellCount].Shape.TextFrame.MarginBottom = 0;
+                                AddedColumn.Cells[CellCount].Shape.TextFrame.MarginLeft = 0;
+                                AddedColumn.Cells[CellCount].Shape.TextFrame.MarginRight = 0;
+                                AddedColumn.Cells[CellCount].Shape.TextFrame.MarginTop = 0;
+
+                            }
+
+                            if (ColumnCount  == NumberOfColumns)
+                            {
+
+                                AddedColumn = tbl.Columns.Add();
+
+                                for (int CellCount = 1; CellCount <= AddedColumn .Cells.Count; CellCount++)
+                                {
+                                    AddedColumn.Cells[CellCount].Shape.Fill.Visible = MsoTriState.msoFalse;
+                                    AddedColumn.Cells[CellCount].Borders[PpBorderType.ppBorderTop].Weight = 0;
+                                    AddedColumn.Cells[CellCount].Borders[PpBorderType.ppBorderBottom].Weight = 0;
+                                    AddedColumn.Cells[CellCount].Shape.TextFrame.TextRange.Font.Size = 1;
+                                    
+                                    AddedColumn.Cells[CellCount].Shape.TextFrame.MarginBottom = 0;
+                                    AddedColumn.Cells[CellCount].Shape.TextFrame.MarginLeft = 0;
+                                    AddedColumn.Cells[CellCount].Shape.TextFrame.MarginRight = 0;
+                                    AddedColumn.Cells[CellCount].Shape.TextFrame.MarginTop = 0;
+
+                                }
+
+                            }
+
+                        }
+                        else
+                        {
+
+                            if (ColumnCount != 1)
+                            {
+
+                                var AddedColumn = tbl.Columns.Add(ColumnCount);
+
+                                for (int CellCount = 1; CellCount <= AddedColumn .Cells.Count; CellCount++)
+                                {
+                                    AddedColumn.Cells[CellCount].Shape.Fill.Visible = MsoTriState.msoFalse;
+                                    AddedColumn.Cells[CellCount].Borders[PpBorderType.ppBorderTop].Weight = 0;
+                                    AddedColumn.Cells[CellCount].Borders[PpBorderType.ppBorderBottom].Weight = 0;
+                                    AddedColumn.Cells[CellCount].Shape.TextFrame.TextRange.Font.Size = 1;
+                                    
+                                    AddedColumn.Cells[CellCount].Shape.TextFrame.MarginBottom = 0;
+                                    AddedColumn.Cells[CellCount].Shape.TextFrame.MarginLeft = 0;
+                                    AddedColumn.Cells[CellCount].Shape.TextFrame.MarginRight = 0;
+                                    AddedColumn.Cells[CellCount].Shape.TextFrame.MarginTop = 0;
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+                    /////////
+                    for (int ColumnCount = 1; ColumnCount <= NumberOfNewColumns; ColumnCount++)
+                    {
+                        tbl.Columns[ColumnCount].Width = (float)ColumnWidthArray[ColumnCount - 1];
+
+                    }
+
+                }
+                else
+                {
+                    MessageBox.Show("No table selected or too many shapes selected. Select one table.");
+                }
+            }
+        }
+        /*
+         Sub TableColumnGaps(TypeOfGaps As String, GapSize As Double, Optional GapColor As RGBColor)
+    
+    Set myDocument = Application.ActiveWindow
+    
+    If Not (myDocument.Selection.Type = ppSelectionShapes Or myDocument.Selection.Type = ppSelectionText) Then
+        MsgBox "No table selected."
+    Else
+        
+        If (Application.ActiveWindow.Selection.ShapeRange.Count = 1) And Application.ActiveWindow.Selection.ShapeRange.HasTable Then
+            
+            If Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA COLUMNGAPS") = "odd" Or Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA COLUMNGAPS") = "even" Then
+                
+                If MsgBox("Existing column gaps found in table, do you want to remove those first?", vbYesNo) = vbYes Then
+                    TableColumnRemoveGaps
+                End If
+                
+            End If
+            
+            If TypeOfGaps = "odd" Then
+                Application.ActiveWindow.Selection.ShapeRange.Tags.Add "INSTRUMENTA COLUMNGAPS", "odd"
+            Else
+                Application.ActiveWindow.Selection.ShapeRange.Tags.Add "INSTRUMENTA COLUMNGAPS", "even"
+            End If
+            
+            With Application.ActiveWindow.Selection.ShapeRange.Table
+                
+                NumberOfColumns = .Columns.Count
+                Dim ColumnWidthArray() As Double
+                
+                If TypeOfGaps = "odd" Then
+                    
+                    NumberOfNewColumns = NumberOfColumns + NumberOfColumns + 1
+                    ReDim ColumnWidthArray(0)
+                    
+                    For ColumnCount = 1 To NumberOfColumns
+                        ReDim Preserve ColumnWidthArray(UBound(ColumnWidthArray) + 2)
+                        ColumnWidthArray(UBound(ColumnWidthArray) - 1) = .Columns(ColumnCount).Width
+                        ColumnWidthArray(UBound(ColumnWidthArray) - 2) = GapSize
+                        
+                        If ColumnCount = NumberOfColumns Then
+                            ReDim Preserve ColumnWidthArray(UBound(ColumnWidthArray) + 1)
+                            ColumnWidthArray(UBound(ColumnWidthArray) - 1) = GapSize
+                        End If
+                        
+                    Next ColumnCount
+                    
+                Else
+                    
+                    NumberOfNewColumns = NumberOfColumns + NumberOfColumns - 1
+                    
+                    For ColumnCount = 1 To NumberOfColumns
+                        
+                        If Not ColumnCount = 1 Then
+                            ReDim Preserve ColumnWidthArray(UBound(ColumnWidthArray) + 2)
+                            ColumnWidthArray(UBound(ColumnWidthArray) - 1) = .Columns(ColumnCount).Width
+                            ColumnWidthArray(UBound(ColumnWidthArray) - 2) = GapSize
+                            
+                        Else
+                            ReDim ColumnWidthArray(1)
+                            ColumnWidthArray(UBound(ColumnWidthArray) - 1) = .Columns(ColumnCount).Width
+                        End If
+                        
+                    Next ColumnCount
+                    
+                End If
+                
+                For ColumnCount = NumberOfColumns To 1 Step -1
+                    
+                    If TypeOfGaps = "odd" Then
+                        
+                        Set AddedColumn = .Columns.Add(ColumnCount)
+                        
+                        For CellCount = 1 To AddedColumn.Cells.Count
+                            AddedColumn.Cells(CellCount).Shape.Fill.Visible = msoFalse
+                            AddedColumn.Cells(CellCount).Borders(ppBorderTop).Weight = 0
+                            AddedColumn.Cells(CellCount).Borders(ppBorderBottom).Weight = 0
+                            AddedColumn.Cells(CellCount).Shape.TextFrame.TextRange.Font.Size = 1
+                            
+                            AddedColumn.Cells(CellCount).Shape.TextFrame.MarginBottom = 0
+                            AddedColumn.Cells(CellCount).Shape.TextFrame.MarginLeft = 0
+                            AddedColumn.Cells(CellCount).Shape.TextFrame.MarginRight = 0
+                            AddedColumn.Cells(CellCount).Shape.TextFrame.MarginTop = 0
+                            
+                        Next CellCount
+                        
+                        If ColumnCount = NumberOfColumns Then
+                            
+                            Set AddedColumn = .Columns.Add
+                            
+                            For CellCount = 1 To AddedColumn.Cells.Count
+                                AddedColumn.Cells(CellCount).Shape.Fill.Visible = msoFalse
+                                AddedColumn.Cells(CellCount).Borders(ppBorderTop).Weight = 0
+                                AddedColumn.Cells(CellCount).Borders(ppBorderBottom).Weight = 0
+                                AddedColumn.Cells(CellCount).Shape.TextFrame.TextRange.Font.Size = 1
+                                
+                                AddedColumn.Cells(CellCount).Shape.TextFrame.MarginBottom = 0
+                                AddedColumn.Cells(CellCount).Shape.TextFrame.MarginLeft = 0
+                                AddedColumn.Cells(CellCount).Shape.TextFrame.MarginRight = 0
+                                AddedColumn.Cells(CellCount).Shape.TextFrame.MarginTop = 0
+                                
+                            Next CellCount
+                            
+                        End If
+                        
+                    Else
+                        
+                        If Not ColumnCount = 1 Then
+                            
+                            Set AddedColumn = .Columns.Add(ColumnCount)
+                            
+                            For CellCount = 1 To AddedColumn.Cells.Count
+                                AddedColumn.Cells(CellCount).Shape.Fill.Visible = msoFalse
+                                AddedColumn.Cells(CellCount).Borders(ppBorderTop).Weight = 0
+                                AddedColumn.Cells(CellCount).Borders(ppBorderBottom).Weight = 0
+                                AddedColumn.Cells(CellCount).Shape.TextFrame.TextRange.Font.Size = 1
+                                
+                                AddedColumn.Cells(CellCount).Shape.TextFrame.MarginBottom = 0
+                                AddedColumn.Cells(CellCount).Shape.TextFrame.MarginLeft = 0
+                                AddedColumn.Cells(CellCount).Shape.TextFrame.MarginRight = 0
+                                AddedColumn.Cells(CellCount).Shape.TextFrame.MarginTop = 0
+                                
+                            Next CellCount
+                            
+                        End If
+                        
+                    End If
+                    
+                Next ColumnCount
+                
+                For ColumnCount = 1 To NumberOfNewColumns
+                    
+                    .Columns(ColumnCount).Width = ColumnWidthArray(ColumnCount - 1)
+                    
+                Next ColumnCount
+                
+            End With
+            
+        Else
+            
+            MsgBox "No table selected or too many shapes selected. Select one table."
+            
+        End If
+        
+    End If
+    
+End Sub
+
+         */
+        void TableRowGaps(string TypeOfGaps,double GapSize)
+        {
+            var myDocument = ThisAddIn.application.ActiveWindow;
+            if (!(myDocument.Selection.Type == PpSelectionType.ppSelectionShapes || myDocument.Selection.Type == PpSelectionType.ppSelectionText))
+            {
+                MessageBox.Show("No table  selected.");
+            }
+            else
+            {
+                if (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Count == 1 && (ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoCTrue || ThisAddIn.application.ActiveWindow.Selection.ShapeRange.HasTable == MsoTriState.msoTrue))
+                {
+
+                    if (!(ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA ROWGAPS"] == "odd" || ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags["INSTRUMENTA ROWGAPS"] == "even"))
+                    {
+                        if (MessageBox.Show("Existing row gaps found in table, do you want to remove those first?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes )
+                        {
+                            TableRowRemoveGaps(null);
+                        }
+                    }
+                    ////////////
+                    if (TypeOfGaps == "odd")
+                        ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags.Add("INSTRUMENTA ROWGAPS", "odd");
+                    else
+                        ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Tags.Add("INSTRUMENTA ROWGAPS", "even");
+                    //////
+                    var tbl =ThisAddIn.application.ActiveWindow.Selection.ShapeRange.Table;
+                    var NumberOfRows =tbl .Rows.Count;
+                    List<double> RowHeightArray = new List<double>();
+                    var NumberOfNewRows = 0;
+                    if (TypeOfGaps == "odd")
+                    {
+                         NumberOfNewRows = NumberOfRows + NumberOfRows + 1;
+                        RowHeightArray.Clear();
+                        for (int RowCount = 1; RowCount <= NumberOfRows; RowCount++)
+                        {
+                            RowHeightArray.Add(GapSize);
+                            RowHeightArray.Add(tbl.Rows[RowCount].Height);
+                            if (RowCount == NumberOfRows)
+                            {
+                                RowHeightArray.Add(GapSize);
+                            }
+                        }
+                    }
+                    else
+                    {
+                         NumberOfNewRows = NumberOfRows + NumberOfRows - 1;
+                        for (int RowCount = 1; RowCount <= NumberOfRows; RowCount++)
+                        {
+                            if (RowCount != 1) {
+                                
+                                      RowHeightArray.Add(GapSize);
+                                      RowHeightArray.Add(tbl.Rows[RowCount].Height);
+
+                            }
+                            else {
+                                RowHeightArray.Clear();
+                                RowHeightArray.Add(tbl.Rows[RowCount].Height);
+                                }
+                        }
+
+                    }
+                    ///////////
+                    for (int RowCount = NumberOfRows; RowCount >= 1; RowCount--) {
+
+                        if (TypeOfGaps == "odd") {
+
+                            var AddedRow = tbl.Rows.Add(RowCount);
+
+                            for (int CellCount = 1; CellCount <= AddedRow.Cells.Count; CellCount++) {
+                                AddedRow.Cells[CellCount].Shape.Fill.Visible = MsoTriState.msoFalse;
+                                AddedRow.Cells[CellCount].Borders[PpBorderType.ppBorderLeft].Weight = 0;
+                                    AddedRow.Cells[CellCount].Borders[PpBorderType.ppBorderRight].Weight = 0;
+                                AddedRow.Cells[CellCount].Shape.TextFrame.TextRange.Font.Size = 1;
+
+                                AddedRow.Cells[CellCount].Shape.TextFrame.MarginBottom = 0;
+                                AddedRow.Cells[CellCount].Shape.TextFrame.MarginLeft = 0;
+                                AddedRow.Cells[CellCount].Shape.TextFrame.MarginRight = 0;
+                                AddedRow.Cells[CellCount].Shape.TextFrame.MarginTop = 0;
+
+                            }
+
+                            if (RowCount == NumberOfRows) {
+
+                                AddedRow = tbl.Rows.Add();
+
+                                for (int CellCount = 1; CellCount <= AddedRow.Cells.Count; CellCount++) {
+                                    AddedRow.Cells[CellCount].Shape.Fill.Visible = MsoTriState.msoFalse;
+                                    AddedRow.Cells[CellCount].Borders[PpBorderType.ppBorderLeft].Weight = 0;
+                                        AddedRow.Cells[CellCount].Borders[PpBorderType.ppBorderRight].Weight = 0;
+                                        AddedRow.Cells[CellCount].Shape.TextFrame.TextRange.Font.Size = 1;
+
+                                    AddedRow.Cells[CellCount].Shape.TextFrame.MarginBottom = 0;
+                                    AddedRow.Cells[CellCount].Shape.TextFrame.MarginLeft = 0;
+                                    AddedRow.Cells[CellCount].Shape.TextFrame.MarginRight = 0;
+                                    AddedRow.Cells[CellCount].Shape.TextFrame.MarginTop = 0;
+
+                                }
+
+                            }
+
+                        } else {
+
+                            if (RowCount != 1) {
+
+                               var AddedRow = tbl.Rows.Add(RowCount);
+
+                                for (int CellCount = 1; CellCount <= AddedRow.Cells.Count; CellCount++) {
+                                    AddedRow.Cells[CellCount].Shape.Fill.Visible = MsoTriState.msoFalse;
+                                    AddedRow.Cells[CellCount].Borders[PpBorderType.ppBorderLeft].Weight = 0;
+                                    AddedRow.Cells[CellCount].Borders[PpBorderType.ppBorderRight].Weight = 0;
+                                    AddedRow.Cells[CellCount].Shape.TextFrame.TextRange.Font.Size = 1;
+
+                                    AddedRow.Cells[CellCount].Shape.TextFrame.MarginBottom = 0;
+                                    AddedRow.Cells[CellCount].Shape.TextFrame.MarginLeft = 0;
+                                    AddedRow.Cells[CellCount].Shape.TextFrame.MarginRight = 0;
+                                    AddedRow.Cells[CellCount].Shape.TextFrame.MarginTop = 0;
+
+                                }
+
+                            }
+
+                        }
+
+                        }
+                    /////////
+                    for (int RowCount = 1; RowCount <= NumberOfNewRows; RowCount++)
+                    {
+                        tbl.Rows[RowCount].Height =(float) RowHeightArray[RowCount - 1];
+
+                    }
+
+                }
+                else
+                {
+                    MessageBox.Show("No table selected or too many shapes selected. Select one table.");
+                }
+            }
+        }
+                //TableRowGaps
+                /*
+                 Sub TableRowGaps(TypeOfGaps As String, GapSize As Double, Optional GapColor As RGBColor)
+
+            Set myDocument = Application.ActiveWindow
+
+            If Not (myDocument.Selection.Type = ppSelectionShapes Or myDocument.Selection.Type = ppSelectionText) Then
+                MsgBox "No table selected."
+            Else
+
+                If (Application.ActiveWindow.Selection.ShapeRange.Count = 1) And Application.ActiveWindow.Selection.ShapeRange.HasTable Then
+
+                    If Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA ROWGAPS") = "odd" Or Application.ActiveWindow.Selection.ShapeRange.Tags("INSTRUMENTA ROWGAPS") = "even" Then
+
+                        If MsgBox("Existing row gaps found in table, do you want to remove those first?", vbYesNo) = vbYes Then
+                            TableRowRemoveGaps
+                        End If
+
+                    End If
+
+                    If TypeOfGaps = "odd" Then
+                        Application.ActiveWindow.Selection.ShapeRange.Tags.Add "INSTRUMENTA ROWGAPS", "odd"
+                    Else
+                        Application.ActiveWindow.Selection.ShapeRange.Tags.Add "INSTRUMENTA ROWGAPS", "even"
+                    End If
+
+                    With Application.ActiveWindow.Selection.ShapeRange.Table
+
+                        NumberOfRows = .Rows.Count
+                        Dim RowHeightArray() As Double
+
+                        If TypeOfGaps = "odd" Then
+
+                            NumberOfNewRows = NumberOfRows + NumberOfRows + 1
+                            ReDim RowHeightArray(0)
+
+                            For RowCount = 1 To NumberOfRows
+                                ReDim Preserve RowHeightArray(UBound(RowHeightArray) + 2)
+                                RowHeightArray(UBound(RowHeightArray) - 1) = .Rows(RowCount).Height
+                                RowHeightArray(UBound(RowHeightArray) - 2) = GapSize
+
+                                If RowCount = NumberOfRows Then
+                                    ReDim Preserve RowHeightArray(UBound(RowHeightArray) + 1)
+                                    RowHeightArray(UBound(RowHeightArray) - 1) = GapSize
+                                End If
+
+                            Next RowCount
+
+                        Else
+
+                            NumberOfNewRows = NumberOfRows + NumberOfRows - 1
+
+                            For RowCount = 1 To NumberOfRows
+
+                                If Not RowCount = 1 Then
+                                    ReDim Preserve RowHeightArray(UBound(RowHeightArray) + 2)
+                                    RowHeightArray(UBound(RowHeightArray) - 1) = .Rows(RowCount).Height
+                                    RowHeightArray(UBound(RowHeightArray) - 2) = GapSize
+
+                                Else
+                                    ReDim RowHeightArray(1)
+                                    RowHeightArray(UBound(RowHeightArray) - 1) = .Rows(RowCount).Height
+                                End If
+
+                            Next RowCount
+
+                        End If
+                ***************1***************
+                        For RowCount = NumberOfRows To 1 Step -1
+
+                            If TypeOfGaps = "odd" Then
+
+                                Set AddedRow = .Rows.Add(RowCount)
+
+                                For CellCount = 1 To AddedRow.Cells.Count
+                                    AddedRow.Cells(CellCount).Shape.Fill.Visible = msoFalse
+                                    AddedRow.Cells(CellCount).Borders(ppBorderLeft).Weight = 0
+                                    AddedRow.Cells(CellCount).Borders(ppBorderRight).Weight = 0
+                                    AddedRow.Cells(CellCount).Shape.TextFrame.TextRange.Font.Size = 1
+
+                                    AddedRow.Cells(CellCount).Shape.TextFrame.MarginBottom = 0
+                                    AddedRow.Cells(CellCount).Shape.TextFrame.MarginLeft = 0
+                                    AddedRow.Cells(CellCount).Shape.TextFrame.MarginRight = 0
+                                    AddedRow.Cells(CellCount).Shape.TextFrame.MarginTop = 0
+
+                                Next CellCount
+
+                                If RowCount = NumberOfRows Then
+
+                                    Set AddedRow = .Rows.Add
+
+                                    For CellCount = 1 To AddedRow.Cells.Count
+                                        AddedRow.Cells(CellCount).Shape.Fill.Visible = msoFalse
+                                        AddedRow.Cells(CellCount).Borders(ppBorderLeft).Weight = 0
+                                        AddedRow.Cells(CellCount).Borders(ppBorderRight).Weight = 0
+                                        AddedRow.Cells(CellCount).Shape.TextFrame.TextRange.Font.Size = 1
+
+                                        AddedRow.Cells(CellCount).Shape.TextFrame.MarginBottom = 0
+                                        AddedRow.Cells(CellCount).Shape.TextFrame.MarginLeft = 0
+                                        AddedRow.Cells(CellCount).Shape.TextFrame.MarginRight = 0
+                                        AddedRow.Cells(CellCount).Shape.TextFrame.MarginTop = 0
+
+                                    Next CellCount
+
+                                End If
+
+                            Else
+
+                                If Not RowCount = 1 Then
+
+                                    Set AddedRow = .Rows.Add(RowCount)
+
+                                    For CellCount = 1 To AddedRow.Cells.Count
+                                        AddedRow.Cells(CellCount).Shape.Fill.Visible = msoFalse
+                                        AddedRow.Cells(CellCount).Borders(ppBorderLeft).Weight = 0
+                                        AddedRow.Cells(CellCount).Borders(ppBorderRight).Weight = 0
+                                        AddedRow.Cells(CellCount).Shape.TextFrame.TextRange.Font.Size = 1
+
+                                        AddedRow.Cells(CellCount).Shape.TextFrame.MarginBottom = 0
+                                        AddedRow.Cells(CellCount).Shape.TextFrame.MarginLeft = 0
+                                        AddedRow.Cells(CellCount).Shape.TextFrame.MarginRight = 0
+                                        AddedRow.Cells(CellCount).Shape.TextFrame.MarginTop = 0
+
+                                    Next CellCount
+
+                                End If
+
+                            End If
+
+                        Next RowCount
+                ******************2****************
+                        For RowCount = 1 To NumberOfNewRows
+
+                            .Rows(RowCount).Height = RowHeightArray(RowCount - 1)
+
+                        Next RowCount
+
+                    End With
+
+                Else
+
+                    MsgBox "No table selected or too many shapes selected. Select one table."
+
+                End If
+
+            End If
+
+        End Sub
+
+                 */
+                void ConnectRectangleShapes(string ShapeDirection)
         {
             if(ThisAddIn.application.ActiveWindow.Selection.Type==PpSelectionType.ppSelectionShapes)
             {
@@ -2994,6 +5768,7 @@ End If
         Endn sub
          */
         #endregion
+    
         #endregion
 
         #region Helpers
